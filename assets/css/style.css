@@ -1,0 +1,155 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f1f4f9;
+    color: #333;
+}
+
+.page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.site-header {
+    flex-shrink: 0;
+    background-color: #007bff;
+    color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.site-header .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.site-header .logo {
+    font-size: 30px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.site-header .logo img {
+    height: 32px;
+    width: 32px;
+}
+
+.nav {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.nav a:hover {
+    color: #e0e0e0;
+}
+
+.main-content {
+    flex-grow: 1;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.main-content h1 {
+    font-size: 32px;
+    color: #333;
+}
+
+.main-content p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 12px 28px;
+    font-size: 16px;
+    border-radius: 8px;
+    background: #007bff;
+    color: white;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.greeting {
+    font-size: 18px;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.site-footer {
+    flex-shrink: 0;
+    background: #2e2e2e;
+    color: #ccc;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .site-header .container {
+        padding: 0 15px;
+    }
+
+    .main-content {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .main-content h1 {
+        font-size: 26px;
+    }
+
+    .main-content p {
+        font-size: 16px;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}
