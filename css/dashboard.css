@@ -1,0 +1,34 @@
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.dashboard a {
+    padding: 1rem;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    flex: 1 1 200px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.dashboard a:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .dashboard a {
+        flex: 1 1 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard a {
+        flex: 1 1 100%;
+    }
+}
