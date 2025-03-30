@@ -3,16 +3,23 @@
         <div class="logo">HMS</div>
         <button class="nav-toggle">☰</button>
         <nav>
-            <a href="../app/dashboard.php">Home</a>
-            <a href="../app/rooms.php">Rooms</a>
-            <a href="../app/bookings.php">Bookings</a>
-            <a href="../app/checkin_checkout.php">Check-in/Out</a>
-            <a href="../app/billing.php">Billing</a>
-            <a href="../app/customers.php">Customers</a>
-            <a href="../app/feedback.php">Feedback</a>
-            <a href="../app/reports.php">Reports</a>
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'Administrator') { ?>
-                <a href="../app/users.php">Users</a>
+            <?php if (isset($_SESSION['user_id'])) { // Staff navigation ?>
+                <a href="../app/dashboard.php">Home</a>
+                <a href="../app/rooms.php">Rooms</a>
+                <a href="../app/bookings.php">Bookings</a>
+                <a href="../app/checkin_checkout.php">Check-in/Out</a>
+                <a href="../app/billing.php">Billing</a>
+                <a href="../app/customers.php">Customers</a>
+                <a href="../app/feedback.php">Feedback</a>
+                <a href="../app/reports.php">Reports</a>
+                <?php if ($_SESSION['role'] == 'Administrator') { ?>
+                    <a href="../app/users.php">Users</a>
+                <?php } ?>
+            <?php } elseif (isset($_SESSION['guest_id'])) { // Guest navigation ?>
+                <a href="../app/guest_dashboard.php">Home</a>
+                <a href="../app/guest_bookings.php">Book a Room</a>
+                <a href="../app/guest_profile.php">My Profile</a>
+                <a href="../app/guest_feedback.php">Submit Feedback</a>
             <?php } ?>
             <a href="../app/logout.php">Logout</a>
         </nav>
