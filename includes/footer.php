@@ -1,4 +1,4 @@
-<footer>
+<!-- <footer>
     <p>© 2025 Hotel Management System - Dev Ninjas</p>
 </footer>
 <style>
@@ -16,4 +16,8 @@
             font-size: 0.9rem;
         }
     }
-</style>
+</style> -->
+
+<footer class="text-center text-white py-3" style="background: #1a2b5f;">
+    <p>© <?php echo date('Y'); ?> Hotel Management System - Dev Ninjas</p>
+</footer>
