@@ -1,23 +1,22 @@
 <?php
 session_start();
-if (isset($_SESSION['user_id']) || isset($_SESSION['guest_id'])) {
-    header("Location: dashboard.php");
+if (isset($_SESSION['guest_id'])) {
+    header("Location: guest_dashboard.php");
     exit;
 }
 require_once '../includes/db_connect.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['staff_login'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $stmt = $pdo->prepare("SELECT * FROM staff WHERE email = ? AND password = ?");
+    $stmt = $pdo->prepare("SELECT * FROM guests WHERE email = ? AND password = ?");
     $stmt->execute([$email, $password]);
-    $user = $stmt->fetch();
-    if ($user) {
-        $_SESSION['user_id'] = $user['staff_id'];
-        $_SESSION['role'] = $user['role'];
-        header("Location: dashboard.php");
+    $guest = $stmt->fetch();
+    if ($guest) {
+        $_SESSION['guest_id'] = $guest['guest_id'];
+        header("Location: guest_dashboard.php");
     } else {
-        $staff_error = "Invalid staff credentials!";
+        $error = "Invalid guest credentials!";
     }
 }
 ?>
@@ -26,20 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['staff_login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HMS - Staff Login</title>
+    <title>HMS - Guest Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/main.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="../css/forms.css">
 </head>
 <body class="lobby-bg">
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card glass-card p-4 shadow-lg" style="max-width: 450px; width: 100%;">
             <div class="card-body text-center">
                 <h2 class="card-title mb-3 text-navy">Hotel Management System</h2>
-                <h4 class="card-subtitle mb-4 text-muted">Staff Login</h4>
-                <?php if (isset($staff_error)) { ?>
+                <h4 class="card-subtitle mb-4 text-muted">Guest Login</h4>
+                <?php if (isset($error)) { ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <?php echo $staff_error; ?>
+                        <?php echo $error; ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php } ?>
@@ -54,11 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['staff_login'])) {
                         <input type="password" class="form-control form-control-lg" id="password" name="password" required>
                         <div class="invalid-feedback">Please enter your password.</div>
                     </div>
-                    <button type="submit" name="staff_login" class="btn btn-primary btn-gold w-100">Staff Login</button>
+                    <button type="submit" class="btn btn-primary btn-gold w-100">Login</button>
                 </form>
                 <div class="mt-4 d-flex justify-content-center gap-3">
-                    <a href="guest_login.php" class="btn btn-outline-primary btn-outline-navy btn-sm">Guest Login</a>
                     <a href="guest_register.php" class="btn btn-outline-primary btn-outline-navy btn-sm">Register as Guest</a>
+                    <a href="index.php" class="btn btn-outline-primary btn-outline-navy btn-sm">Staff Login</a>
                 </div>
             </div>
         </div>

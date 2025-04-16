@@ -8,7 +8,8 @@ CREATE TABLE guests (
     address TEXT,
     phone_number VARCHAR(15),
     email VARCHAR(100) UNIQUE,
-    gov_id_number VARCHAR(50)
+    gov_id_number VARCHAR(50),
+    password VARCHAR(255) NOT NULL 
 );
 
 CREATE TABLE rooms (
@@ -21,6 +22,7 @@ CREATE TABLE rooms (
     floor_number INT
 );
 
+-- Bookings table
 CREATE TABLE bookings (
     booking_id INT AUTO_INCREMENT PRIMARY KEY,
     guest_id INT,
@@ -77,7 +79,6 @@ CREATE TABLE feedback (
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
 );
 
--- Invoices table
 CREATE TABLE invoices (
     invoice_id INT AUTO_INCREMENT PRIMARY KEY,
     booking_id INT,
@@ -93,4 +94,4 @@ CREATE TABLE invoices (
 );
 
 INSERT INTO staff (first_name, last_name, role, email, password)
-VALUES ('Admin', 'User', 'Administrator', 'admin@hms.com', 'admin1234');
+VALUES ('Admin', 'User', 'Administrator', 'admin@hms.com', 'admin123');
