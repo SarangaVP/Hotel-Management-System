@@ -32,10 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $alert_type = "danger";
     } else {
         try {
-            // Hash the password before storing
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, phone_number = ?, email = ?, password = ? WHERE guest_id = ?");
-            $stmt->execute([$first_name, $last_name, $phone, $email, $hashed_password, $guest_id]);
+            $stmt->execute([$first_name, $last_name, $phone, $email, $password, $guest_id]);
             $alert_message = "Profile updated successfully!";
             $alert_type = "success";
             // Refresh guest data

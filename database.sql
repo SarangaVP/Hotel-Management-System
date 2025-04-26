@@ -52,7 +52,7 @@ CREATE TABLE payments (
     payment_method VARCHAR(50),
     total_amount DECIMAL(10, 2),
     discount_applied ENUM('Yes', 'No') DEFAULT 'No',
-    refund_processed ENUM('Yes', 'No') DEFAULT 'No',
+    -- refund_processed ENUM('Yes', 'No') DEFAULT 'No',
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
     FOREIGN KEY (guest_id) REFERENCES guests(guest_id)
 );

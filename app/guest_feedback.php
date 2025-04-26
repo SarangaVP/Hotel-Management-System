@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <div class="form-group">
                         <label for="comments" class="form-label">Comments</label>
-                        <textarea name="comments" id="comments" class="form-control form-control-lg" rows="4" placeholder="Share your experience..."></textarea>
+                        <textarea name="comments" id="comments" class="form-control form-control-lg" rows="1" placeholder="Share your experience..."></textarea>
                     </div>
                     <div class="form-group form-group-button">
                         <button type="submit" class="btn btn-primary btn-navy btn-lg filter-btn" <?php echo empty($completed_bookings) ? 'disabled' : ''; ?>>Submit Feedback</button>
