@@ -40,47 +40,46 @@ if (isset($_POST['record_payment'])) {
     $invoice_id = $_POST['invoice_id'];
     $booking_id = $_POST['booking_id'];
     $guest_id = $_POST['guest_id'];
-    $payment_received = (float)$_POST['payment_received'];
+    $payment_amount = (float)$_POST['payment_received']; 
     $payment_method = $_POST['payment_method'];
-    $discount_applied = (float)$_POST['discount_applied'];
+    $discount_amount = (float)$_POST['discount_applied']; 
     $total_amount_due = (float)$_POST['total_amount_due'];
     $current_amount_paid = (float)$_POST['current_amount_paid'];
 
     // Validate inputs
-    if ($payment_received <= 0) {
+    if ($payment_amount <= 0) {
         $alert_message = "Error: Payment amount must be greater than 0.";
         $alert_type = "danger";
     } elseif (empty($payment_method)) {
         $alert_message = "Error: Please select a payment method.";
         $alert_type = "danger";
-    } elseif ($discount_applied < 0) {
+    } elseif ($discount_amount < 0) {
         $alert_message = "Error: Discount cannot be negative.";
         $alert_type = "danger";
     } else {
         try {
-            // Calculate new amounts
-            $total_after_discount = $total_amount_due - $discount_applied;
-            $new_amount_paid = $current_amount_paid + $payment_received;
+            $total_after_discount = $total_amount_due - $discount_amount;
+            $new_amount_paid = $current_amount_paid + $payment_amount;
             $balance_due = $total_after_discount - $new_amount_paid;
-            $refund_processed = 0;
 
-            // Handle overpayment as refund
+            $overpayment = 0;
             if ($balance_due < 0) {
-                $refund_processed = abs($balance_due);
+                $overpayment = abs($balance_due);
                 $balance_due = 0;
                 $new_amount_paid = $total_after_discount;
             }
 
             // Update invoice
-            $payment_status = $balance_due == 0 ? 'Paid' : 'Unpaid';
+            $payment_status = $balance_due == 0 ? 'Paid' : ($new_amount_paid > 0 ? 'Partially Paid' : 'Unpaid');
             $stmt = $pdo->prepare("UPDATE invoices SET amount_paid = ?, balance_due = ?, payment_status = ? WHERE invoice_id = ?");
             $stmt->execute([$new_amount_paid, $balance_due, $payment_status, $invoice_id]);
 
             // Record payment
-            $stmt = $pdo->prepare("INSERT INTO payments (booking_id, guest_id, payment_received, payment_date, payment_time, payment_method, total_amount, discount_applied, refund_processed) VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?, ?, ?)");
-            $stmt->execute([$booking_id, $guest_id, $payment_received, $payment_method, $total_after_discount, $discount_applied, $refund_processed]);
+            $discount_applied = $discount_amount > 0 ? 'Yes' : 'No';
+            $stmt = $pdo->prepare("INSERT INTO payments (booking_id, guest_id, payment_received, payment_date, payment_time, payment_method, total_amount, discount_applied) VALUES (?, ?, 'Yes', CURDATE(), CURTIME(), ?, ?, ?)");
+            $stmt->execute([$booking_id, $guest_id, $payment_method, $payment_amount, $discount_applied]);
 
-            $alert_message = "Payment recorded successfully!" . ($refund_processed > 0 ? " A refund of $" . number_format($refund_processed, 2) . " was processed." : "");
+            $alert_message = "Payment recorded successfully!" . ($overpayment > 0 ? " An overpayment of $" . number_format($overpayment, 2) . " was noted." : "");
             $alert_type = "success";
         } catch (PDOException $e) {
             $alert_message = "Error recording payment: " . $e->getMessage();
@@ -225,7 +224,7 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                                             </select>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-label">Discount Applied</label>
+                                                            <label for="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-label">Discount Amount</label>
                                                             <input type="number" step="0.01" name="discount_applied" id="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter discount (if any)" value="0" min="0" required>
                                                         </div>
                                                         <div class="form-group form-group-button mt-3">
