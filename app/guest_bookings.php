@@ -105,7 +105,7 @@ if (isset($_POST['book'])) {
             <?php if ($alert_message && !$last_booking_id): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
@@ -187,9 +187,7 @@ if (isset($_POST['book'])) {
                     <div class="modal-content standard-card">
                         <div class="modal-header">
                             <h5 class="modal-title" id="errorModalLabel">Invalid Details</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria ⎯
-
--label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <p id="errorMessage"></p>
@@ -213,7 +211,7 @@ if (isset($_POST['book'])) {
                             <p>Are you sure you want to book this room?</p>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-primary btn-outline-navy" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-outline-primary btn-outline-navy cancel-btn" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" id="confirmBookingBtn" class="btn btn-primary btn-navy">Yes, Book</button>
                         </div>
                     </div>
@@ -230,7 +228,7 @@ if (isset($_POST['book'])) {
                         </div>
                         <div class="modal-body">
                             <p>Your booking has been submitted successfully! Awaiting confirmation.</p>
-                            <p>Booking ID: <strong id="bookingIdDisplay"><?php echo $last_booking_id ? htmlspecialchars(str_pad($last_booking_id)) : ''; ?></strong></p>
+                            <p>Booking ID: <strong id="bookingIdDisplay"><?php echo $last_booking_id ? htmlspecialchars(str_pad($last_booking_id, 4, '0', STR_PAD_LEFT)) : ''; ?></strong></p>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary btn-navy" data-bs-dismiss="modal">OK</button>
@@ -249,7 +247,7 @@ if (isset($_POST['book'])) {
             const checkout = new Date(document.getElementById('checkout_date').value);
             const numGuests = parseInt(document.getElementById('num_guests').value);
 
-            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { backdrop: 'static' });
             const errorMessage = document.getElementById('errorMessage');
 
             if (checkout <= checkin) {
@@ -271,14 +269,14 @@ if (isset($_POST['book'])) {
         document.querySelectorAll('.book-btn').forEach(button => {
             button.addEventListener('click', function () {
                 activeForm = this.closest('form');
-                console.log('Book button clicked, activeForm set:', activeForm); // Debugging
+                console.log('Book button clicked, activeForm set:', activeForm);
 
                 const checkin = new Date(activeForm.querySelector('input[name="checkin_date"]').value);
                 const checkout = new Date(activeForm.querySelector('input[name="checkout_date"]').value);
                 const numGuests = parseInt(activeForm.querySelector('input[name="num_guests"]').value);
                 const roomCapacity = parseInt(activeForm.querySelector('input[name="room_capacity"]').value);
 
-                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { backdrop: 'static' });
                 const errorMessage = document.getElementById('errorMessage');
 
                 if (checkout <= checkin) {
@@ -297,27 +295,64 @@ if (isset($_POST['book'])) {
                     return;
                 }
 
+                // Close any existing modals before opening the confirmation modal
+                document.querySelectorAll('.modal.show').forEach(modal => {
+                    bootstrap.Modal.getInstance(modal).hide();
+                });
+
                 // Show the confirmation modal
-                const confirmModal = new bootstrap.Modal(document.getElementById('confirmBookingModal'));
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmBookingModal'), { backdrop: 'static' });
                 confirmModal.show();
             });
         });
 
         // Handle confirmation
         document.getElementById('confirmBookingBtn').addEventListener('click', function () {
-            console.log('Confirm button clicked, activeForm:', activeForm); // Debugging
+            console.log('Confirm button clicked, activeForm:', activeForm);
             if (activeForm) {
                 console.log('Submitting form...');
                 activeForm.submit();
             } else {
                 console.error('No active form found to submit.');
+                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { backdrop: 'static' });
+                document.getElementById('errorMessage').textContent = 'An error occurred. Please try again.';
+                errorModal.show();
             }
+        });
+
+        // Handle cancel button to ensure backdrop is removed
+        document.querySelectorAll('.cancel-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                console.log('Cancel button clicked');
+                const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmBookingModal'));
+                confirmModal.hide();
+                // Force-remove the backdrop
+                document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = 'auto';
+            });
+        });
+
+        // Ensure backdrop is removed when any modal is hidden
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('hidden.bs.modal', function () {
+                console.log('Modal hidden:', this.id);
+                // Remove any remaining backdrops
+                document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = 'auto';
+            });
         });
 
         // Show success modal if booking was successful
         <?php if ($last_booking_id): ?>
             document.addEventListener('DOMContentLoaded', function () {
-                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                // Close any existing modals before opening the success modal
+                document.querySelectorAll('.modal.show').forEach(modal => {
+                    bootstrap.Modal.getInstance(modal).hide();
+                });
+
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'), { backdrop: 'static' });
                 successModal.show();
             });
         <?php endif; ?>
