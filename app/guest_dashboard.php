@@ -14,18 +14,8 @@ $stmt->execute([$guest_id]);
 $guest = $stmt->fetch();
 $guest_name = $guest ? htmlspecialchars($guest['first_name'] . ' ' . $guest['last_name']) : 'Guest';
 
-// Fetch upcoming bookings (Confirmed bookings with check-in date on or after today)
-$current_date = date('Y-m-d');
-$upcoming_bookings = $pdo->prepare("
-    SELECT b.*, r.room_number 
-    FROM bookings b 
-    JOIN rooms r ON b.room_id = r.room_id 
-    WHERE b.guest_id = ? 
-    AND b.booking_status = 'Confirmed' 
-    AND b.checkin_date >= ?
-");
-$upcoming_bookings->execute([$guest_id, $current_date]);
-$bookings = $upcoming_bookings->fetchAll();
+// Fetch all bookings for the guest
+$bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r ON b.room_id = r.room_id WHERE b.guest_id = $guest_id")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,17 +44,19 @@ $bookings = $upcoming_bookings->fetchAll();
                 </div>
             </div> -->
 
-            <!-- Section 2: Upcoming Bookings -->
+            <!-- Section 2: My Bookings -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Upcoming Bookings</h4>
+                <h4 class="mb-3 text-center">My Bookings</h4>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
                             <tr>
-                                <th>Booking ID</th>
+                                <th>ID</th>
                                 <th>Room</th>
                                 <th>Check-in</th>
+                                <th>Actual Check-in</th>
                                 <th>Check-out</th>
+                                <th>Actual Check-out</th>
                                 <th>Guests</th>
                                 <th>Status</th>
                             </tr>
@@ -72,7 +64,7 @@ $bookings = $upcoming_bookings->fetchAll();
                         <tbody>
                             <?php if (empty($bookings)): ?>
                                 <tr>
-                                    <td colspan="6" class="text-center">No upcoming bookings found.</td>
+                                    <td colspan="8" class="text-center">No bookings found.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($bookings as $booking): ?>
@@ -80,7 +72,25 @@ $bookings = $upcoming_bookings->fetchAll();
                                         <td><?php echo htmlspecialchars($booking['booking_id']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['room_number']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['checkin_date']); ?></td>
+                                        <td>
+                                            <?php
+                                            if ($booking['actual_checkin_date']) {
+                                                echo htmlspecialchars($booking['actual_checkin_date'] . ' ' . $booking['actual_checkin_time']);
+                                            } else {
+                                                echo 'Not checked in';
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($booking['checkout_date']); ?></td>
+                                        <td>
+                                            <?php
+                                            if ($booking['actual_checkout_date']) {
+                                                echo htmlspecialchars($booking['actual_checkout_date'] . ' ' . $booking['actual_checkout_time']);
+                                            } else {
+                                                echo 'Not checked out';
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($booking['num_guests']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['booking_status']); ?></td>
                                     </tr>

@@ -26,9 +26,9 @@ $total_revenue = 1500.00; // Example
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card glass-card p-4 shadow-lg" style="max-width: 800px; width: 100%;">
             <div class="card-body text-center">
-                <h2 class="card-title mb-2 text-navy">Hotel Management System</h2>
-                <h4 class="card-subtitle mb-3 text-muted">Staff Dashboard</h4>
-                <h5 class="text-white mb-4">Welcome, <?php echo htmlspecialchars($_SESSION['role']); ?>!</h5>
+                <h2 class="card-title mb-4 text-navy"><b>Hotel Management System</b></h2>
+                <!-- <h4 class="card-subtitle mb-3 text-muted">Staff Dashboard</h4> -->
+                <h3 class="text-muted mb-5"><b>Welcome, <?php echo htmlspecialchars($_SESSION['role']); ?>!</b></h5>
                 <div class="dashboard-summary">
                     <div class="row g-3">
                         <div class="col-md-4">

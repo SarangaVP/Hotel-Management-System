@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $last_name = trim($_POST['last_name']);
     $phone = trim($_POST['phone']);
     $email = trim($_POST['email']);
+    $gov_id = trim($_POST['gov_id']);
+    $address = trim($_POST['address']);
     $password = trim($_POST['password']);
 
     // Validate inputs
@@ -32,8 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $alert_type = "danger";
     } else {
         try {
-            $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, phone_number = ?, email = ?, password = ? WHERE guest_id = ?");
-            $stmt->execute([$first_name, $last_name, $phone, $email, $password, $guest_id]);
+            $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, phone_number = ?, email = ?, gov_id_number = ?, address = ?, password = ? WHERE guest_id = ?");
+            $stmt->execute([$first_name, $last_name, $phone, $email, $gov_id, $address, $password, $guest_id]);
             $alert_message = "Profile updated successfully!";
             $alert_type = "success";
             // Refresh guest data
@@ -87,12 +89,20 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
                         <input type="text" name="last_name" id="last_name" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['last_name']); ?>" required>
                     </div>
                     <div class="form-group">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" name="address" id="address" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['address'] ?? ''); ?>" placeholder="Enter your address">
+                    </div>
+                    <div class="form-group">
                         <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" name="phone" id="phone" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['phone_number']); ?>" placeholder="e.g., +1234567890">
+                        <input type="text" name="phone" id="phone" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['phone_number'] ?? ''); ?>" placeholder="e.g., +1234567890">
                     </div>
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" name="email" id="email" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['email']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gov_id" class="form-label">Government ID</label>
+                        <input type="text" name="gov_id" id="gov_id" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['gov_id_number'] ?? ''); ?>" placeholder="Enter your Government ID">
                     </div>
                     <div class="form-group">
                         <label for="password" class="form-label">Password</label>

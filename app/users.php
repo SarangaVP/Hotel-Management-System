@@ -5,10 +5,11 @@ require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
 if (isset($_POST['add_staff'])) {
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    // Store the password as plain text
+    $password = $_POST['password'];
     $stmt = $pdo->prepare("INSERT INTO staff (first_name, last_name, role, phone_number, email, password) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['first_name'], $_POST['last_name'], $_POST['role'], $_POST['phone'], $_POST['email'], $password]);
-    header("Location: staff.php"); // Redirect to refresh the page after adding
+    header("Location: users.php"); // Redirect to refresh the page after adding
     exit;
 }
 
@@ -18,18 +19,18 @@ if (isset($_POST['edit_staff'])) {
     
     // Update password if provided
     if (!empty($_POST['password'])) {
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $password = $_POST['password'];
         $stmt = $pdo->prepare("UPDATE staff SET password = ? WHERE staff_id = ?");
         $stmt->execute([$password, $_POST['staff_id']]);
     }
-    header("Location: staff.php"); // Redirect to refresh the page after updating
+    header("Location: users.php"); // Redirect to refresh the page after updating
     exit;
 }
 
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM staff WHERE staff_id = ?");
     $stmt->execute([$_GET['delete']]);
-    header("Location: staff.php"); // Redirect to refresh the page after deletion
+    header("Location: users.php"); // Redirect to refresh the page after deletion
     exit;
 }
 
@@ -50,7 +51,7 @@ $staff = $pdo->query("SELECT * FROM staff")->fetchAll();
     <main>
         <div class="container mt-5 pt-5">
             <div class="card standard-card p-4 mb-4">
-                <h2 class="text-center mb-4">Staff Management</h2>
+                <h1 class="text-center mb-4"><b>Staff Management</b></h1>
                 <form method="POST">
                     <div class="row g-3">
                         <div class="col-md-6">

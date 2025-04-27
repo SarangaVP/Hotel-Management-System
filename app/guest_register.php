@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card glass-card p-3 shadow-lg" style="max-width: 450px; width: 100%;">
             <div class="card-body text-center">
-                <h2 class="card-title mb-2 text-navy">Hotel Management System</h2>
-                <h4 class="card-subtitle mb-3 text-muted">Guest Registration</h4>
+                <h2 class="card-title mb-2 text-navy"><b>Hotel Management System</b></h2>
+                <h4 class="card-subtitle mb-3 text-muted"><b>Guest Registration</b></h4>
                 <?php if ($success) { ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <?php echo $success; ?>

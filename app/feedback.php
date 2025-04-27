@@ -28,7 +28,7 @@ $feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FR
     <main>
         <div class="container mt-5 pt-5">
             <div class="card standard-card p-4 mb-4">
-                <h2 class="text-center mb-4">Customer Feedback</h2>
+                <h1 class="text-center mb-4"><b>Customer Feedback</b></h1>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>

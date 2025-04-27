@@ -24,7 +24,7 @@ if (isset($_POST['generate_invoice'])) {
             $days = $pdo->query("SELECT DATEDIFF(checkout_date, checkin_date) FROM bookings WHERE booking_id = $booking_id")->fetchColumn();
             $total = $price * $days;
 
-            $stmt = $pdo->prepare("INSERT INTO invoices (booking_id, guest_id, invoice_date, invoice_time, total_amount_due, amount_paid, balance_due, payment_status) VALUES (?, (SELECT guest_id FROM bookings WHERE booking_id = ?), CURDATE(), CURTIME(), ?, 0, ?, 'Unpaid')");
+            $stmt = $pdo->prepare("INSERT INTO invoices (booking_id, guest_id, invoice_date, invoice_time, total_amount_due, amount_paid, balance_due, payment_status, discount) VALUES (?, (SELECT guest_id FROM bookings WHERE booking_id = ?), CURDATE(), CURTIME(), ?, 0, ?, 'Unpaid', 0)");
             $stmt->execute([$booking_id, $booking_id, $total, $total]);
             $alert_message = "Invoice generated successfully!";
             $alert_type = "success";
@@ -40,11 +40,12 @@ if (isset($_POST['record_payment'])) {
     $invoice_id = $_POST['invoice_id'];
     $booking_id = $_POST['booking_id'];
     $guest_id = $_POST['guest_id'];
-    $payment_amount = (float)$_POST['payment_received']; 
+    $payment_amount = (float)$_POST['payment_received'];
     $payment_method = $_POST['payment_method'];
-    $discount_amount = (float)$_POST['discount_applied']; 
+    $discount_amount = (float)$_POST['discount_applied'];
     $total_amount_due = (float)$_POST['total_amount_due'];
     $current_amount_paid = (float)$_POST['current_amount_paid'];
+    $current_discount = isset($_POST['current_discount']) ? (float)$_POST['current_discount'] : 0;
 
     // Validate inputs
     if ($payment_amount <= 0) {
@@ -58,21 +59,24 @@ if (isset($_POST['record_payment'])) {
         $alert_type = "danger";
     } else {
         try {
-            $total_after_discount = $total_amount_due - $discount_amount;
+            // Calculate new amounts
+            $new_discount = $current_discount + $discount_amount;
+            $new_total_amount_due = $total_amount_due - $discount_amount;
             $new_amount_paid = $current_amount_paid + $payment_amount;
-            $balance_due = $total_after_discount - $new_amount_paid;
+            $balance_due = $new_total_amount_due - $new_amount_paid;
 
+            // Handle overpayment
             $overpayment = 0;
             if ($balance_due < 0) {
                 $overpayment = abs($balance_due);
                 $balance_due = 0;
-                $new_amount_paid = $total_after_discount;
+                $new_amount_paid = $new_total_amount_due;
             }
 
             // Update invoice
             $payment_status = $balance_due == 0 ? 'Paid' : ($new_amount_paid > 0 ? 'Partially Paid' : 'Unpaid');
-            $stmt = $pdo->prepare("UPDATE invoices SET amount_paid = ?, balance_due = ?, payment_status = ? WHERE invoice_id = ?");
-            $stmt->execute([$new_amount_paid, $balance_due, $payment_status, $invoice_id]);
+            $stmt = $pdo->prepare("UPDATE invoices SET total_amount_due = ?, amount_paid = ?, balance_due = ?, payment_status = ?, discount = ? WHERE invoice_id = ?");
+            $stmt->execute([$new_total_amount_due, $new_amount_paid, $balance_due, $payment_status, $new_discount, $invoice_id]);
 
             // Record payment
             $discount_applied = $discount_amount > 0 ? 'Yes' : 'No';
@@ -106,7 +110,7 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">Billing and Payments</h1>
+            <h1 class="text-center mb-4"><b>Billing and Payments</b></h1>
 
             <!-- Alert Message -->
             <?php if ($alert_message): ?>
@@ -118,7 +122,7 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
 
             <!-- Section 1: Generate Invoice -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Generate Invoice</h4>
+                <h4 class="mb-3 text-center"><b>Generate Invoice</b></h4>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
@@ -141,10 +145,7 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                         <td><?php echo htmlspecialchars($booking['first_name'] . ' ' . $booking['last_name']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['room_number']); ?></td>
                                         <td>
-                                            <form method="POST" style="display:inline;">
-                                                <input type="hidden" name="booking_id" value="<?php echo htmlspecialchars($booking['booking_id']); ?>">
-                                                <button type="submit" name="generate_invoice" class="btn btn-primary btn-sm" onclick="return confirm('Are you sure you want to generate an invoice for this booking?');">Generate</button>
-                                            </form>
+                                            <button type="button" class="btn btn-primary btn-navy btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>">Generate</button>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -156,7 +157,7 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
 
             <!-- Section 2: Invoices -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Invoices</h4>
+                <h4 class="mb-3 text-center"><b>Invoices</b></h4>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
@@ -165,9 +166,10 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                 <th>Booking</th>
                                 <th>Guest</th>
                                 <th>Invoice Date</th>
-                                <th>Total Due</th>
-                                <th>Paid</th>
-                                <th>Balance</th>
+                                <th>Total Due (Rs)</th>
+                                <th>Discount (Rs)</th>
+                                <th>Paid (Rs)</th>
+                                <th>Balance (Rs)</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -175,7 +177,7 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                         <tbody>
                             <?php if (empty($invoices)): ?>
                                 <tr>
-                                    <td colspan="9" class="text-center">No invoices found.</td>
+                                    <td colspan="10" class="text-center">No invoices found.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($invoices as $invoice): ?>
@@ -184,9 +186,10 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                         <td><?php echo htmlspecialchars($invoice['booking_id']); ?></td>
                                         <td><?php echo htmlspecialchars($invoice['first_name'] . ' ' . $invoice['last_name']); ?></td>
                                         <td><?php echo htmlspecialchars($invoice['invoice_date'] . ' ' . $invoice['invoice_time']); ?></td>
-                                        <td><?php echo '$' . number_format($invoice['total_amount_due'], 2); ?></td>
-                                        <td><?php echo '$' . number_format($invoice['amount_paid'], 2); ?></td>
-                                        <td><?php echo '$' . number_format($invoice['balance_due'], 2); ?></td>
+                                        <td><?php echo number_format($invoice['total_amount_due'], 2); ?></td>
+                                        <td><?php echo number_format(isset($invoice['discount']) ? $invoice['discount'] : 0, 2); ?></td>
+                                        <td><?php echo number_format($invoice['amount_paid'], 2); ?></td>
+                                        <td><?php echo number_format($invoice['balance_due'], 2); ?></td>
                                         <td><?php echo htmlspecialchars($invoice['payment_status']); ?></td>
                                         <td>
                                             <?php if ($invoice['balance_due'] > 0): ?>
@@ -210,9 +213,10 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                                         <input type="hidden" name="guest_id" value="<?php echo htmlspecialchars($invoice['guest_id']); ?>">
                                                         <input type="hidden" name="total_amount_due" value="<?php echo htmlspecialchars($invoice['total_amount_due']); ?>">
                                                         <input type="hidden" name="current_amount_paid" value="<?php echo htmlspecialchars($invoice['amount_paid']); ?>">
+                                                        <input type="hidden" name="current_discount" value="<?php echo htmlspecialchars(isset($invoice['discount']) ? $invoice['discount'] : 0); ?>">
                                                         <div class="form-group">
                                                             <label for="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-label">Amount Paid</label>
-                                                            <input type="number" step="0.01" name="payment_received" id="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter amount" min="0.01" required>
+                                                            <input type="number" step="0.01" name="payment_received" id="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter amount (Rs)" min="0.01" required>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="payment_method_<?php echo $invoice['invoice_id']; ?>" class="form-label">Payment Method</label>
@@ -241,31 +245,65 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                     </table>
                 </div>
             </div>
+
+            <!-- Confirmation Modal -->
+            <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content standard-card">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="confirmMessage">Are you sure you want to generate an invoice for this booking?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary btn-outline-navy" data-bs-dismiss="modal">Cancel</button>
+                            <form id="confirmForm" method="POST" style="display:inline;">
+                                <input type="hidden" name="booking_id" id="modalBookingId">
+                                <button type="submit" name="generate_invoice" class="btn btn-primary btn-navy">Confirm</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
+        // JavaScript to handle modal content dynamically
+        const confirmModal = document.getElementById('confirmModal');
+        confirmModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const bookingId = button.getAttribute('data-booking-id'); // Booking ID
+
+            const modalBookingId = document.getElementById('modalBookingId');
+
+            // Set the booking ID in the hidden input
+            modalBookingId.value = bookingId;
+        });
+
         // Client-side validation for payment form
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function (e) {
-                const paymentReceived = parseFloat(form.querySelector('[name="payment_received"]').value);
-                const paymentMethod = form.querySelector('[name="payment_method"]').value;
-                const discountApplied = parseFloat(form.querySelector('[name="discount_applied"]').value);
+                const paymentReceived = form.querySelector('[name="payment_received"]');
+                const paymentMethod = form.querySelector('[name="payment_method"]');
+                const discountApplied = form.querySelector('[name="discount_applied"]');
 
-                if (paymentReceived <= 0) {
+                if (paymentReceived && parseFloat(paymentReceived.value) <= 0) {
                     e.preventDefault();
                     alert('Payment amount must be greater than 0.');
                     return;
                 }
 
-                if (!paymentMethod) {
+                if (paymentMethod && !paymentMethod.value) {
                     e.preventDefault();
                     alert('Please select a payment method.');
                     return;
                 }
 
-                if (discountApplied < 0) {
+                if (discountApplied && parseFloat(discountApplied.value) < 0) {
                     e.preventDefault();
                     alert('Discount cannot be negative.');
                 }

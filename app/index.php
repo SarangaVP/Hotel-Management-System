@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['staff_login'])) {
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card glass-card p-4 shadow-lg" style="max-width: 450px; width: 100%;">
             <div class="card-body text-center">
-                <h2 class="card-title mb-3 text-navy">Hotel Management System</h2>
-                <h4 class="card-subtitle mb-4 text-muted">Staff Login</h4>
+                <h2 class="card-title mb-3 text-navy"><b>Hotel Management System</b></h2>
+                <h4 class="card-subtitle mb-4 text-muted"><b>Staff Login</b></h4>
                 <?php if (isset($staff_error)) { ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <?php echo $staff_error; ?>
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['staff_login'])) {
                         <input type="password" class="form-control form-control-lg" id="password" name="password" required>
                         <div class="invalid-feedback">Please enter your password.</div>
                     </div>
-                    <button type="submit" name="staff_login" class="btn btn-primary btn-gold w-100">Staff Login</button>
+                    <button type="submit" name="staff_login" class="btn btn-primary btn-gold w-100">Login</button>
                 </form>
                 <div class="mt-4 d-flex justify-content-center gap-3">
                     <a href="guest_login.php" class="btn btn-outline-primary btn-outline-navy btn-sm">Guest Login</a>

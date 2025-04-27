@@ -40,7 +40,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
     <main>
     <div class="container mt-5 pt-5">
         <div class="card standard-card p-4 mb-4">
-            <h2 class="text-center mb-4">Room Management</h2>
+            <h1 class="text-center mb-4"><b>Room Management</b></h1>
             <form method="POST">
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -58,7 +58,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
                         <input type="number" name="capacity" class="form-control form-control-lg" placeholder="Capacity" required>
                     </div>
                     <div class="col-md-4">
-                        <input type="number" step="0.01" name="price" class="form-control form-control-lg" placeholder="Price/Night" required>
+                        <input type="number" step="0.01" name="price" class="form-control form-control-lg" placeholder="Price/Night (Rs)" required>
                     </div>
                     <div class="col-md-4">
                         <input type="number" name="floor" class="form-control form-control-lg" placeholder="Floor">
@@ -79,7 +79,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
                             <th>Number</th>
                             <th>Type</th>
                             <th>Capacity</th>
-                            <th>Price</th>
+                            <th>Price (Rs)</th>
                             <th>Floor</th>
                             <th>Status</th>
                             <th>Actions</th>

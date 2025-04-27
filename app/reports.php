@@ -36,11 +36,11 @@ $revenue = $stmt->fetch();
     <main>
         <div class="container mt-5 pt-5">
             <div class="card standard-card p-4 mb-4">
-                <h2 class="text-center mb-4">Reports and Analytics</h2>
+                <h1 class="text-center mb-4"><b>Reports and Analytics</b></h1>
 
                 <!-- Date Range Filter for Revenue -->
                 <div class="mb-4">
-                    <h4 class="mb-3">Filter Revenue by Date Range</h4>
+                    <h5 class="mb-3 mt-3"><b>Filter Revenue by Date Range<b></h4>
                     <form method="POST" class="date-filter-form">
                         <div class="form-group">
                             <label for="start_date" class="form-label">Start Date</label>
@@ -56,9 +56,17 @@ $revenue = $stmt->fetch();
                     </form>
                 </div>
 
+                <!-- Revenue Report -->
+                <div class="mb-4">
+                    <h4 class="mb-3"><b>Revenue Report</b></h4>
+                    <div class="card standard-card p-3">
+                        <p>Total Revenue (<?php echo htmlspecialchars($start_date_display); ?> to <?php echo htmlspecialchars($end_date_display); ?>): Rs <?php echo htmlspecialchars(number_format($revenue['total_revenue'] ?: 0, 2)); ?></p>
+                    </div>
+                </div>
+
                 <!-- Occupancy Report -->
                 <div class="mb-4">
-                    <h4 class="mb-3">Occupancy Report</h4>
+                    <h4 class="mb-3"><b>Occupancy Report</b></h4>
                     <div class="card standard-card p-3">
                         <p class="mb-2">Booked Rooms: <?php echo htmlspecialchars($occupancy['booked']); ?> / <?php echo htmlspecialchars($occupancy['total']); ?></p>
                         <div class="progress" style="height: 20px;">
@@ -69,13 +77,6 @@ $revenue = $stmt->fetch();
                     </div>
                 </div>
 
-                <!-- Revenue Report -->
-                <div>
-                    <h4 class="mb-3">Revenue Report</h4>
-                    <div class="card standard-card p-3">
-                        <p>Total Revenue (<?php echo htmlspecialchars($start_date_display); ?> to <?php echo htmlspecialchars($end_date_display); ?>): $<?php echo htmlspecialchars(number_format($revenue['total_revenue'] ?: 0, 2)); ?></p>
-                    </div>
-                </div>
             </div>
         </div>
     </main>

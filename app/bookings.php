@@ -40,7 +40,7 @@ if (isset($_POST['cancel_booking'])) {
     try {
         $booking_id = $_POST['booking_id'];
         $room_id = $_POST['room_id'];
-        $pdo->prepare("UPDATE bookings SET booking_status = 'Cancelled' WHERE booking_id = ?")->execute([$booking_id]);
+        $pdo->prepare("UPDATE bookings SET booking_status = 'Canceled' WHERE booking_id = ?")->execute([$booking_id]);
         $pdo->prepare("UPDATE rooms SET room_status = 'Available' WHERE room_id = ?")->execute([$room_id]);
         $alert_message = "Booking cancelled successfully!";
         $alert_type = "success";
@@ -69,7 +69,7 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">Booking Management</h1>
+            <h1 class="text-center mb-4"><b>Booking Management</b></h1>
 
             <!-- Alert Message -->
             <?php if ($alert_message): ?>
@@ -81,7 +81,6 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
 
             <!-- Section 1: Add New Booking -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Add New Booking</h4>
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
                         <label for="guest_id" class="form-label">Guest</label>
@@ -129,7 +128,7 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
 
             <!-- Section 2: Current Bookings -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Current Bookings</h4>
+                <h4 class="mb-3 text-center"><b>Current Bookings</b></h4>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
@@ -161,13 +160,9 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
                                         <td><?php echo htmlspecialchars($booking['booking_status']); ?></td>
                                         <td>
                                             <?php if ($booking['booking_status'] == 'Confirmed'): ?>
-                                                <form method="POST" style="display:inline;">
-                                                    <input type="hidden" name="booking_id" value="<?php echo htmlspecialchars($booking['booking_id']); ?>">
-                                                    <input type="hidden" name="room_id" value="<?php echo htmlspecialchars($booking['room_id']); ?>">
-                                                    <button type="submit" name="cancel_booking" class="btn btn-danger btn-sm">Cancel</button>
-                                                </form>
+                                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal" data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>" data-room-id="<?php echo htmlspecialchars($booking['room_id']); ?>">Cancel</button>
                                             <?php else: ?>
-                                                <span class="text-muted">N/A</span>
+                                                <span class="text-muted"></span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -177,25 +172,87 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
                     </table>
                 </div>
             </div>
+
+            <!-- Validation Error Modal -->
+            <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content standard-card">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="errorModalLabel">Invalid Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="errorMessage"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-navy" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancel Confirmation Modal -->
+            <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content standard-card">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cancelModalLabel">Confirm Cancellation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to cancel this booking?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary btn-outline-navy" data-bs-dismiss="modal">No</button>
+                            <form id="cancelForm" method="POST" style="display:inline;">
+                                <input type="hidden" name="booking_id" id="cancelBookingId">
+                                <input type="hidden" name="room_id" id="cancelRoomId">
+                                <button type="submit" name="cancel_booking" class="btn btn-danger">Yes, Cancel</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Client-side validation for dates
+        // Client-side validation for dates with modal
         document.querySelector('form').addEventListener('submit', function (e) {
             const checkin = new Date(document.getElementById('checkin_date').value);
             const checkout = new Date(document.getElementById('checkout_date').value);
             const numGuests = parseInt(document.getElementById('num_guests').value);
 
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            const errorMessage = document.getElementById('errorMessage');
+
             if (checkout <= checkin) {
                 e.preventDefault();
-                alert('Check-out date must be after check-in date.');
+                errorMessage.textContent = 'Check-out date must be after check-in date.';
+                errorModal.show();
+                return;
             }
             if (numGuests <= 0) {
                 e.preventDefault();
-                alert('Number of guests must be greater than 0.');
+                errorMessage.textContent = 'Number of guests must be greater than 0.';
+                errorModal.show();
+                return;
             }
+        });
+
+        // Handle cancel modal
+        const cancelModal = document.getElementById('cancelModal');
+        cancelModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const bookingId = button.getAttribute('data-booking-id');
+            const roomId = button.getAttribute('data-room-id');
+
+            const cancelBookingId = document.getElementById('cancelBookingId');
+            const cancelRoomId = document.getElementById('cancelRoomId');
+
+            cancelBookingId.value = bookingId;
+            cancelRoomId.value = roomId;
         });
     </script>
 </body>
