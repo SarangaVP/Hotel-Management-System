@@ -73,9 +73,9 @@ $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FR
                                 <th>ID</th>
                                 <th>Guest</th>
                                 <th>Room</th>
-                                <th>Check-in Date</th>
+                                <th>Scheduled Check-in Date</th>
                                 <th>Actual Check-in</th>
-                                <th>Check-out Date</th>
+                                <th>Scheduled Check-out Date</th>
                                 <th>Actual Check-out</th>
                                 <th>Status</th>
                                 <th>Actions</th>

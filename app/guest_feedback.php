@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">Submit Feedback</h1>
+            <h1 class="text-center mb-4"><b>Feedbacks</b></h1>
 
             <!-- Alert Message -->
             <?php if ($alert_message): ?>
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <!-- Section 1: Submit Feedback -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Provide Feedback</h4>
+                <h4 class="mb-3 text-center"><b>Provide Feedback</b></h4>
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
                         <label for="booking_id" class="form-label">Select Booking</label>
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <!-- Section 2: My Feedback -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">My Feedback</h4>
+                <h4 class="mb-3 text-center"><b>My Feedbacks</b></h4>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>

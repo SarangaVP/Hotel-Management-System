@@ -83,7 +83,7 @@ if (isset($_POST['book'])) {
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">Book a Room</h1>
+            <h1 class="text-center mb-4"><b>Book Rooms</b></h1>
 
             <!-- Alert Message -->
             <?php if ($alert_message): ?>
@@ -95,7 +95,7 @@ if (isset($_POST['book'])) {
 
             <!-- Section 1: Search for a Room -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Search for a Room</h4>
+                <h4 class="mb-3 text-center"><b>Search for a Room</b></h4>
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
                         <label for="checkin_date" class="form-label">Check-in Date</label>

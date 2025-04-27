@@ -39,7 +39,7 @@ $feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FR
                                 <th>Rating</th>
                                 <th>Comments</th>
                                 <th>Date</th>
-                                <th>Actions</th>
+                                <!-- <th>Actions</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -51,29 +51,6 @@ $feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FR
                                     <td><?php echo htmlspecialchars($feedback['feedback_rating']); ?>/5</td>
                                     <td><?php echo htmlspecialchars($feedback['feedback_comments']); ?></td>
                                     <td><?php echo htmlspecialchars($feedback['feedback_date']); ?></td>
-                                    <td>
-                                        <div class="d-flex gap-2 justify-content-center">
-                                            <button type="button" class="btn btn-outline-primary btn-outline-navy btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $feedback['feedback_id']; ?>">Delete</button>
-                                        </div>
-                                        <!-- Delete Confirmation Modal -->
-                                        <div class="modal fade" id="deleteModal<?php echo $feedback['feedback_id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $feedback['feedback_id']; ?>" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content standard-card">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteModalLabel<?php echo $feedback['feedback_id']; ?>">Confirm Deletion</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Are you sure you want to delete this feedback from <?php echo htmlspecialchars($feedback['first_name'] . ' ' . $feedback['last_name']); ?>?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-primary btn-outline-navy" data-bs-dismiss="modal">Cancel</button>
-                                                        <a href="?delete=<?php echo $feedback['feedback_id']; ?>" class="btn btn-primary btn-navy">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
                                 </tr>
                             <?php } ?>
                         </tbody>

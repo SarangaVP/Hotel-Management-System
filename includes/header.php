@@ -48,13 +48,16 @@ if (session_status() == PHP_SESSION_NONE) {
                             <a class="nav-link nav-text" href="guest_dashboard.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-text" href="guest_bookings.php">Book a Room</a>
+                            <a class="nav-link nav-text" href="guest_bookings.php">Bookings</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-text" href="guest_profile.php">My Profile</a>
+                            <a class="nav-link nav-text" href="guest_profile.php">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-text" href="guest_feedback.php">Submit Feedback</a>
+                            <a class="nav-link nav-text" href="guest_payments.php">Payments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-text" href="guest_feedback.php">Feedback</a>
                         </li>
                     <?php } ?>
                     <li class="nav-item">

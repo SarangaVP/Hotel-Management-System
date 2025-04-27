@@ -66,7 +66,7 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">My Profile</h1>
+            <h1 class="text-center mb-4"><b>My Profile</b></h1>
 
             <!-- Alert Message -->
             <?php if ($alert_message): ?>
@@ -78,7 +78,7 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
 
             <!-- Section 1: Update Profile -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Update Profile</h4>
+                <!-- <h4 class="mb-3 text-center">Update Profile</h4> -->
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
                         <label for="first_name" class="form-label">First Name</label>
@@ -114,62 +114,6 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
                 </form>
             </div>
 
-            <!-- Section 2: My Bookings -->
-            <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">My Bookings</h4>
-                <div class="table-responsive">
-                    <table class="table table-standard">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Room</th>
-                                <th>Check-in</th>
-                                <th>Actual Check-in</th>
-                                <th>Check-out</th>
-                                <th>Actual Check-out</th>
-                                <th>Guests</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($bookings)): ?>
-                                <tr>
-                                    <td colspan="8" class="text-center">No bookings found.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($bookings as $booking): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($booking['booking_id']); ?></td>
-                                        <td><?php echo htmlspecialchars($booking['room_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($booking['checkin_date']); ?></td>
-                                        <td>
-                                            <?php
-                                            if ($booking['actual_checkin_date']) {
-                                                echo htmlspecialchars($booking['actual_checkin_date'] . ' ' . $booking['actual_checkin_time']);
-                                            } else {
-                                                echo 'Not checked in';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($booking['checkout_date']); ?></td>
-                                        <td>
-                                            <?php
-                                            if ($booking['actual_checkout_date']) {
-                                                echo htmlspecialchars($booking['actual_checkout_date'] . ' ' . $booking['actual_checkout_time']);
-                                            } else {
-                                                echo 'Not checked out';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($booking['num_guests']); ?></td>
-                                        <td><?php echo htmlspecialchars($booking['booking_status']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </main>
     <?php require_once '../includes/footer.php'; ?>

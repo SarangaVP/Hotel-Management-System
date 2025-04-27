@@ -58,7 +58,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
                         <input type="number" name="capacity" class="form-control form-control-lg" placeholder="Capacity" required>
                     </div>
                     <div class="col-md-4">
-                        <input type="number" step="0.01" name="price" class="form-control form-control-lg" placeholder="Price/Night (Rs)" required>
+                        <input type="number" step="100" name="price" class="form-control form-control-lg" placeholder="Price/Day (Rs)" required>
                     </div>
                     <div class="col-md-4">
                         <input type="number" name="floor" class="form-control form-control-lg" placeholder="Floor">

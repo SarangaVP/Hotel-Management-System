@@ -32,7 +32,7 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">Welcome, <?php echo $guest_name; ?>!</h1>
+            <h1 class="text-center mb-5"><b>Welcome, <?php echo $guest_name; ?>!</b></h1>
 
             <!-- Section 1: Navigation Links -->
             <!-- <div class="card standard-card p-4 mb-4">
@@ -46,16 +46,16 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
 
             <!-- Section 2: My Bookings -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">My Bookings</h4>
+                <h4 class="mb-3 text-center"><b>My Bookings</b></h4>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Room</th>
-                                <th>Check-in</th>
+                                <th>Scheduled Check-in Date</th>
                                 <th>Actual Check-in</th>
-                                <th>Check-out</th>
+                                <th>Scheduled Check-out Date</th>
                                 <th>Actual Check-out</th>
                                 <th>Guests</th>
                                 <th>Status</th>

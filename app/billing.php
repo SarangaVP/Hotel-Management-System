@@ -215,8 +215,8 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                                         <input type="hidden" name="current_amount_paid" value="<?php echo htmlspecialchars($invoice['amount_paid']); ?>">
                                                         <input type="hidden" name="current_discount" value="<?php echo htmlspecialchars(isset($invoice['discount']) ? $invoice['discount'] : 0); ?>">
                                                         <div class="form-group">
-                                                            <label for="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-label">Amount Paid</label>
-                                                            <input type="number" step="0.01" name="payment_received" id="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter amount (Rs)" min="0.01" required>
+                                                            <label for="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-label">Amount Paid (Rs)</label>
+                                                            <input type="number" step="100" min="0" name="payment_received" id="payment_received_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter amount (Rs)" min="0.01" required>
                                                         </div>
                                                         <div class="form-group">
                                                             <label for="payment_method_<?php echo $invoice['invoice_id']; ?>" class="form-label">Payment Method</label>
@@ -228,8 +228,8 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                                             </select>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-label">Discount Amount</label>
-                                                            <input type="number" step="0.01" name="discount_applied" id="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter discount (if any)" value="0" min="0" required>
+                                                            <label for="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-label">Discount Amount (Rs)</label>
+                                                            <input type="number" step="100" name="discount_applied" id="discount_applied_<?php echo $invoice['invoice_id']; ?>" class="form-control form-control-lg" placeholder="Enter discount (if any)" value="0" min="0" required>
                                                         </div>
                                                         <div class="form-group form-group-button mt-3">
                                                             <button type="submit" name="record_payment" class="btn btn-success btn-lg filter-btn">Record Payment</button>
