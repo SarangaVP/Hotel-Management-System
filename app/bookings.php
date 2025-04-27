@@ -147,7 +147,9 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                                 <th>Guest</th>
                                 <th>Room</th>
                                 <th>Check-in</th>
+                                <th>Actual Check-in</th>
                                 <th>Check-out</th>
+                                <th>Actual Check-out</th>
                                 <th>Guests</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -156,7 +158,7 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                         <tbody>
                             <?php if (empty($bookings)): ?>
                                 <tr>
-                                    <td colspan="8" class="text-center">No bookings found.</td>
+                                    <td colspan="10" class="text-center">No bookings found.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($bookings as $booking): ?>
@@ -165,7 +167,21 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                                         <td><?php echo htmlspecialchars($booking['first_name'] . ' ' . $booking['last_name']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['room_number']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['checkin_date']); ?></td>
+                                        <td>
+                                            <?php 
+                                            echo ($booking['actual_checkin_date'] && $booking['actual_checkin_time']) 
+                                                ? htmlspecialchars($booking['actual_checkin_date'] . ' ' . $booking['actual_checkin_time']) 
+                                                : 'N/A'; 
+                                            ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($booking['checkout_date']); ?></td>
+                                        <td>
+                                            <?php 
+                                            echo ($booking['actual_checkout_date'] && $booking['actual_checkout_time']) 
+                                                ? htmlspecialchars($booking['actual_checkout_date'] . ' ' . $booking['actual_checkout_time']) 
+                                                : 'N/A'; 
+                                            ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($booking['num_guests']); ?></td>
                                         <td><?php echo htmlspecialchars($booking['booking_status']); ?></td>
                                         <td>
