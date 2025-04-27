@@ -13,19 +13,29 @@ if (isset($_POST['add_booking'])) {
     $checkin_date = $_POST['checkin_date'];
     $checkout_date = $_POST['checkout_date'];
     $num_guests = (int)$_POST['num_guests'];
+    $room_id = (int)$_POST['room_id'];
 
-    // Validate dates and number of guests
+    // Fetch room capacity
+    $stmt = $pdo->prepare("SELECT room_capacity FROM rooms WHERE room_id = ?");
+    $stmt->execute([$room_id]);
+    $room = $stmt->fetch();
+    $room_capacity = $room ? $room['room_capacity'] : 0;
+
+    // Validate dates, number of guests, and room capacity
     if (strtotime($checkout_date) <= strtotime($checkin_date)) {
         $alert_message = "Error: Check-out date must be after check-in date.";
         $alert_type = "danger";
     } elseif ($num_guests <= 0) {
         $alert_message = "Error: Number of guests must be greater than 0.";
         $alert_type = "danger";
+    } elseif ($num_guests > $room_capacity) {
+        $alert_message = "Error: Number of guests ($num_guests) exceeds the room capacity ($room_capacity).";
+        $alert_type = "danger";
     } else {
         try {
             $stmt = $pdo->prepare("INSERT INTO bookings (guest_id, room_id, checkin_date, checkout_date, num_guests, booking_status) VALUES (?, ?, ?, ?, ?, 'Confirmed')");
-            $stmt->execute([$_POST['guest_id'], $_POST['room_id'], $checkin_date, $checkout_date, $num_guests]);
-            $pdo->prepare("UPDATE rooms SET room_status = 'Booked' WHERE room_id = ?")->execute([$_POST['room_id']]);
+            $stmt->execute([$_POST['guest_id'], $room_id, $checkin_date, $checkout_date, $num_guests]);
+            $pdo->prepare("UPDATE rooms SET room_status = 'Booked' WHERE room_id = ?")->execute([$room_id]);
             $alert_message = "Booking added successfully!";
             $alert_type = "success";
         } catch (PDOException $e) {
@@ -53,7 +63,7 @@ if (isset($_POST['cancel_booking'])) {
 // Fetch data
 $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FROM bookings b JOIN guests g ON b.guest_id = g.guest_id JOIN rooms r ON b.room_id = r.room_id")->fetchAll();
 $guests = $pdo->query("SELECT guest_id, first_name, last_name FROM guests")->fetchAll();
-$rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status = 'Available'")->fetchAll();
+$rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHERE room_status = 'Available'")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,8 +111,8 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
                                 <option value="" disabled>No available rooms</option>
                             <?php else: ?>
                                 <?php foreach ($rooms as $room): ?>
-                                    <option value="<?php echo htmlspecialchars($room['room_id']); ?>">
-                                        <?php echo htmlspecialchars($room['room_number']); ?>
+                                    <option value="<?php echo htmlspecialchars($room['room_id']); ?>" data-capacity="<?php echo htmlspecialchars($room['room_capacity']); ?>">
+                                        <?php echo htmlspecialchars($room['room_number'] . ' (Capacity: ' . $room['room_capacity'] . ')'); ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
@@ -218,11 +228,14 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Client-side validation for dates with modal
+        // Client-side validation for dates and room capacity with modal
         document.querySelector('form').addEventListener('submit', function (e) {
             const checkin = new Date(document.getElementById('checkin_date').value);
             const checkout = new Date(document.getElementById('checkout_date').value);
             const numGuests = parseInt(document.getElementById('num_guests').value);
+            const roomSelect = document.getElementById('room_id');
+            const selectedOption = roomSelect.options[roomSelect.selectedIndex];
+            const roomCapacity = selectedOption ? parseInt(selectedOption.getAttribute('data-capacity')) : 0;
 
             const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
             const errorMessage = document.getElementById('errorMessage');
@@ -236,6 +249,12 @@ $rooms = $pdo->query("SELECT room_id, room_number FROM rooms WHERE room_status =
             if (numGuests <= 0) {
                 e.preventDefault();
                 errorMessage.textContent = 'Number of guests must be greater than 0.';
+                errorModal.show();
+                return;
+            }
+            if (numGuests > roomCapacity) {
+                e.preventDefault();
+                errorMessage.textContent = `Number of guests (${numGuests}) exceeds the room capacity (${roomCapacity}).`;
                 errorModal.show();
                 return;
             }

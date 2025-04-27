@@ -11,7 +11,13 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-$feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FROM feedback f JOIN guests g ON f.guest_id = g.guest_id JOIN bookings b ON f.booking_id = b.booking_id")->fetchAll();
+// Fetch feedback with both date and time
+$feedbacks = $pdo->query("
+    SELECT f.*, g.first_name, g.last_name, b.booking_id 
+    FROM feedback f 
+    JOIN guests g ON f.guest_id = g.guest_id 
+    JOIN bookings b ON f.booking_id = b.booking_id
+")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,21 +44,27 @@ $feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FR
                                 <th>Booking</th>
                                 <th>Rating</th>
                                 <th>Comments</th>
-                                <th>Date</th>
+                                <th>Date & Time</th>
                                 <!-- <th>Actions</th> -->
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($feedbacks as $feedback) { ?>
+                            <?php if (empty($feedbacks)): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_id']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['first_name'] . ' ' . $feedback['last_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['booking_id']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_rating']); ?>/5</td>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_comments']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_date']); ?></td>
+                                    <td colspan="6" class="text-center">No feedback available.</td>
                                 </tr>
-                            <?php } ?>
+                            <?php else: ?>
+                                <?php foreach ($feedbacks as $feedback): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['first_name'] . ' ' . $feedback['last_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['booking_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_rating']); ?>/5</td>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_comments']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_date'] . ' ' . $feedback['feedback_time']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

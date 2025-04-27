@@ -88,6 +88,7 @@ CREATE TABLE invoices (
     total_amount_due DECIMAL(10, 2),
     amount_paid DECIMAL(10, 2),
     balance_due DECIMAL(10, 2),
+    discount DECIMAL(10, 2),
     payment_status ENUM('Paid', 'Partially Paid', 'Unpaid') DEFAULT 'Unpaid',
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
     FOREIGN KEY (guest_id) REFERENCES guests(guest_id)

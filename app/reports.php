@@ -20,6 +20,19 @@ $occupancy_percentage = $occupancy['total'] > 0 ? round(($occupancy['booked'] / 
 $stmt = $pdo->prepare("SELECT SUM(total_amount) as total_revenue FROM payments WHERE payment_received = 'Yes' AND payment_date BETWEEN ? AND ?");
 $stmt->execute([$start_date, $end_date]);
 $revenue = $stmt->fetch();
+
+// Fetch payment history with date filter
+$stmt = $pdo->prepare("
+    SELECT p.*, g.first_name, g.last_name, b.booking_id 
+    FROM payments p 
+    JOIN guests g ON p.guest_id = g.guest_id 
+    JOIN bookings b ON p.booking_id = b.booking_id 
+    WHERE p.payment_received = 'Yes' 
+    AND p.payment_date BETWEEN ? AND ? 
+    ORDER BY p.payment_date DESC, p.payment_time DESC
+");
+$stmt->execute([$start_date, $end_date]);
+$payments = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +53,7 @@ $revenue = $stmt->fetch();
 
                 <!-- Date Range Filter for Revenue -->
                 <div class="mb-4">
-                    <h5 class="mb-3 mt-3"><b>Filter Revenue by Date Range<b></h4>
+                    <h5 class="mb-3 mt-3"><b>Filter Revenue by Date Range</b></h5>
                     <form method="POST" class="date-filter-form">
                         <div class="form-group">
                             <label for="start_date" class="form-label">Start Date</label>
@@ -61,6 +74,45 @@ $revenue = $stmt->fetch();
                     <h4 class="mb-3"><b>Revenue Report</b></h4>
                     <div class="card standard-card p-3">
                         <p>Total Revenue (<?php echo htmlspecialchars($start_date_display); ?> to <?php echo htmlspecialchars($end_date_display); ?>): Rs <?php echo htmlspecialchars(number_format($revenue['total_revenue'] ?: 0, 2)); ?></p>
+                    </div>
+                </div>
+
+                <!-- Payment History -->
+                <div class="mb-4">
+                    <h4 class="mb-3"><b>Payment History</b></h4>
+                    <div class="card standard-card p-3">
+                        <div class="table-responsive">
+                            <table class="table table-standard">
+                                <thead>
+                                    <tr>
+                                        <th>Payment ID</th>
+                                        <th>Guest</th>
+                                        <th>Booking ID</th>
+                                        <th>Amount (Rs)</th>
+                                        <th>Payment Date & Time</th>
+                                        <th>Payment Method</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (empty($payments)): ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center">No payments found for the selected date range.</td>
+                                        </tr>
+                                    <?php else: ?>
+                                        <?php foreach ($payments as $payment): ?>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($payment['payment_id']); ?></td>
+                                                <td><?php echo htmlspecialchars($payment['first_name'] . ' ' . $payment['last_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($payment['booking_id']); ?></td>
+                                                <td><?php echo htmlspecialchars(number_format($payment['total_amount'], 2)); ?></td>
+                                                <td><?php echo htmlspecialchars($payment['payment_date'] . ' ' . $payment['payment_time']); ?></td>
+                                                <td><?php echo htmlspecialchars($payment['payment_method']); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

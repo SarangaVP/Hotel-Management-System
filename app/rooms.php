@@ -79,7 +79,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
                             <th>Number</th>
                             <th>Type</th>
                             <th>Capacity</th>
-                            <th>Price (Rs)</th>
+                            <th>Price/Day (Rs)</th>
                             <th>Floor</th>
                             <th>Status</th>
                             <th>Actions</th>
