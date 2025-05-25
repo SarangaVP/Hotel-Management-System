@@ -5,23 +5,25 @@ require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
 if (isset($_POST['add_guest'])) {
-    $stmt = $pdo->prepare("INSERT INTO guests (first_name, last_name, address, phone_number, email, gov_id_number) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$_POST['first_name'], $_POST['last_name'], $_POST['address'], $_POST['phone'], $_POST['email'], $_POST['gov_id']]);
-    header("Location: customers.php"); // Redirect to refresh the page after adding
+    $password = $_POST['password'];
+    $stmt = $pdo->prepare("INSERT INTO guests (first_name, last_name, address, phone_number, email, gov_id_number, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$_POST['first_name'], $_POST['last_name'], $_POST['address'], $_POST['phone'], $_POST['email'], $_POST['gov_id'], $password]);
+    header("Location: customers.php");
     exit;
 }
 
 if (isset($_POST['edit_guest'])) {
-    $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, gov_id_number = ? WHERE guest_id = ?");
-    $stmt->execute([$_POST['first_name'], $_POST['last_name'], $_POST['address'], $_POST['phone'], $_POST['email'], $_POST['gov_id'], $_POST['guest_id']]);
-    header("Location: customers.php"); // Redirect to refresh the page after updating
+    $password = !empty($_POST['password']) ? $_POST['password'] : $_POST['current_password'];
+    $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, gov_id_number = ?, password = ? WHERE guest_id = ?");
+    $stmt->execute([$_POST['first_name'], $_POST['last_name'], $_POST['address'], $_POST['phone'], $_POST['email'], $_POST['gov_id'], $password, $_POST['guest_id']]);
+    header("Location: customers.php"); 
     exit;
 }
 
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM guests WHERE guest_id = ?");
     $stmt->execute([$_GET['delete']]);
-    header("Location: customers.php"); // Redirect to refresh the page after deletion
+    header("Location: customers.php");
     exit;
 }
 
@@ -42,7 +44,7 @@ $guests = $pdo->query("SELECT * FROM guests")->fetchAll();
     <main>
     <div class="container mt-5 pt-5">
         <div class="card standard-card p-4 mb-4">
-            <h2 class="text-center mb-4">Customer Management</h2>
+            <h1 class="text-center mb-4"><b>Customer Management</b></h1>
             <form method="POST">
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -62,6 +64,9 @@ $guests = $pdo->query("SELECT * FROM guests")->fetchAll();
                     </div>
                     <div class="col-md-12">
                         <input type="text" name="gov_id" class="form-control form-control-lg" placeholder="Gov ID">
+                    </div>
+                    <div class="col-md-12">
+                        <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" required>
                     </div>
                     <div class="col-12 text-center">
                         <button type="submit" name="add_guest" class="btn btn-primary btn-navy btn-lg">Add Guest</button>
@@ -96,7 +101,6 @@ $guests = $pdo->query("SELECT * FROM guests")->fetchAll();
                                         <button type="button" class="btn btn-primary btn-navy btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $guest['guest_id']; ?>">Edit</button>
                                         <button type="button" class="btn btn-outline-primary btn-outline-navy btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $guest['guest_id']; ?>">Delete</button>
                                     </div>
-                                    <!-- Edit Guest Modal -->
                                     <div class="modal fade" id="editModal<?php echo $guest['guest_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $guest['guest_id']; ?>" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content standard-card">
@@ -107,6 +111,7 @@ $guests = $pdo->query("SELECT * FROM guests")->fetchAll();
                                                 <div class="modal-body">
                                                     <form method="POST">
                                                         <input type="hidden" name="guest_id" value="<?php echo htmlspecialchars($guest['guest_id']); ?>">
+                                                        <input type="hidden" name="current_password" value="<?php echo htmlspecialchars($guest['password']); ?>">
                                                         <div class="row g-3">
                                                             <div class="col-md-6">
                                                                 <input type="text" name="first_name" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['first_name']); ?>" required>
@@ -126,6 +131,9 @@ $guests = $pdo->query("SELECT * FROM guests")->fetchAll();
                                                             <div class="col-md-12">
                                                                 <input type="text" name="gov_id" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['gov_id_number'] ?? ''); ?>" placeholder="Gov ID">
                                                             </div>
+                                                            <div class="col-md-12">
+                                                                <input type="password" name="password" class="form-control form-control-lg" placeholder="New Password (leave blank to keep current)">
+                                                            </div>
                                                             <div class="col-12 text-center">
                                                                 <button type="submit" name="edit_guest" class="btn btn-primary btn-navy btn-lg">Update Guest</button>
                                                             </div>
@@ -135,7 +143,6 @@ $guests = $pdo->query("SELECT * FROM guests")->fetchAll();
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Delete Confirmation Modal -->
                                     <div class="modal fade" id="deleteModal<?php echo $guest['guest_id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $guest['guest_id']; ?>" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content standard-card">

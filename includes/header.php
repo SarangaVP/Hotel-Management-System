@@ -1,5 +1,4 @@
 <?php
-// Ensure session is started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,7 +12,7 @@ if (session_status() == PHP_SESSION_NONE) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <?php if (isset($_SESSION['user_id'])) { // Staff navigation ?>
+                    <?php if (isset($_SESSION['user_id'])) { ?>
                         <li class="nav-item">
                             <a class="nav-link nav-text" href="dashboard.php">Home</a>
                         </li>
@@ -43,18 +42,21 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <a class="nav-link nav-text" href="users.php">Users</a>
                             </li>
                         <?php } ?>
-                    <?php } elseif (isset($_SESSION['guest_id'])) { // Guest navigation ?>
+                    <?php } elseif (isset($_SESSION['guest_id'])) { ?>
                         <li class="nav-item">
                             <a class="nav-link nav-text" href="guest_dashboard.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-text" href="guest_bookings.php">Book a Room</a>
+                            <a class="nav-link nav-text" href="guest_bookings.php">Bookings</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-text" href="guest_profile.php">My Profile</a>
+                            <a class="nav-link nav-text" href="guest_profile.php">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-text" href="guest_feedback.php">Submit Feedback</a>
+                            <a class="nav-link nav-text" href="guest_payments.php">Payments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-text" href="guest_feedback.php">Feedback</a>
                         </li>
                     <?php } ?>
                     <li class="nav-item">
@@ -65,3 +67,33 @@ if (session_status() == PHP_SESSION_NONE) {
         </div>
     </nav>
 </header>
+
+<style>
+    .navbar-nav {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .navbar-nav .nav-item {
+        position: relative;
+    }
+
+    .navbar-nav .nav-item:not(:last-child)::after {
+        content: '|';
+        color: #d3d3d3;
+        position: absolute;
+        right: -0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    @media (max-width: 991.98px) {
+        .navbar-nav {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .navbar-nav .nav-item:not(:last-child)::after {
+            content: none;
+        }
+    }
+</style>

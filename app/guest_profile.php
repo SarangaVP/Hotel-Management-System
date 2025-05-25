@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $last_name = trim($_POST['last_name']);
     $phone = trim($_POST['phone']);
     $email = trim($_POST['email']);
+    $gov_id = trim($_POST['gov_id']);
+    $address = trim($_POST['address']);
     $password = trim($_POST['password']);
 
     // Validate inputs
@@ -32,10 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $alert_type = "danger";
     } else {
         try {
-            // Hash the password before storing
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, phone_number = ?, email = ?, password = ? WHERE guest_id = ?");
-            $stmt->execute([$first_name, $last_name, $phone, $email, $hashed_password, $guest_id]);
+            $stmt = $pdo->prepare("UPDATE guests SET first_name = ?, last_name = ?, phone_number = ?, email = ?, gov_id_number = ?, address = ?, password = ? WHERE guest_id = ?");
+            $stmt->execute([$first_name, $last_name, $phone, $email, $gov_id, $address, $password, $guest_id]);
             $alert_message = "Profile updated successfully!";
             $alert_type = "success";
             // Refresh guest data
@@ -66,9 +66,8 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
 <body>
     <main>
         <div class="container mt-5 pt-5">
-            <h1 class="text-center mb-4">My Profile</h1>
+            <h1 class="text-center mb-4"><b>My Profile</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -76,9 +75,7 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
                 </div>
             <?php endif; ?>
 
-            <!-- Section 1: Update Profile -->
             <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">Update Profile</h4>
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
                         <label for="first_name" class="form-label">First Name</label>
@@ -89,12 +86,20 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
                         <input type="text" name="last_name" id="last_name" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['last_name']); ?>" required>
                     </div>
                     <div class="form-group">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" name="address" id="address" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['address'] ?? ''); ?>" placeholder="Enter your address">
+                    </div>
+                    <div class="form-group">
                         <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" name="phone" id="phone" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['phone_number']); ?>" placeholder="e.g., +1234567890">
+                        <input type="text" name="phone" id="phone" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['phone_number'] ?? ''); ?>" placeholder="e.g., +1234567890">
                     </div>
                     <div class="form-group">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" name="email" id="email" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['email']); ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gov_id" class="form-label">Government ID</label>
+                        <input type="text" name="gov_id" id="gov_id" class="form-control form-control-lg" value="<?php echo htmlspecialchars($guest['gov_id_number'] ?? ''); ?>" placeholder="Enter your Government ID">
                     </div>
                     <div class="form-group">
                         <label for="password" class="form-label">Password</label>
@@ -106,68 +111,11 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
                 </form>
             </div>
 
-            <!-- Section 2: My Bookings -->
-            <div class="card standard-card p-4 mb-4">
-                <h4 class="mb-3 text-center">My Bookings</h4>
-                <div class="table-responsive">
-                    <table class="table table-standard">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Room</th>
-                                <th>Check-in</th>
-                                <th>Actual Check-in</th>
-                                <th>Check-out</th>
-                                <th>Actual Check-out</th>
-                                <th>Guests</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($bookings)): ?>
-                                <tr>
-                                    <td colspan="8" class="text-center">No bookings found.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($bookings as $booking): ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($booking['booking_id']); ?></td>
-                                        <td><?php echo htmlspecialchars($booking['room_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($booking['checkin_date']); ?></td>
-                                        <td>
-                                            <?php
-                                            if ($booking['actual_checkin_date']) {
-                                                echo htmlspecialchars($booking['actual_checkin_date'] . ' ' . $booking['actual_checkin_time']);
-                                            } else {
-                                                echo 'Not checked in';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($booking['checkout_date']); ?></td>
-                                        <td>
-                                            <?php
-                                            if ($booking['actual_checkout_date']) {
-                                                echo htmlspecialchars($booking['actual_checkout_date'] . ' ' . $booking['actual_checkout_time']);
-                                            } else {
-                                                echo 'Not checked out';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo htmlspecialchars($booking['num_guests']); ?></td>
-                                        <td><?php echo htmlspecialchars($booking['booking_status']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </main>
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Client-side validation
         document.querySelector('form').addEventListener('submit', function (e) {
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;

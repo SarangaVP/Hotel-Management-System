@@ -1,4 +1,3 @@
--- CREATE DATABASE hms_db;
 USE hms_db;
 
 CREATE TABLE guests (
@@ -22,7 +21,6 @@ CREATE TABLE rooms (
     floor_number INT
 );
 
--- Bookings table
 CREATE TABLE bookings (
     booking_id INT AUTO_INCREMENT PRIMARY KEY,
     guest_id INT,
@@ -52,7 +50,6 @@ CREATE TABLE payments (
     payment_method VARCHAR(50),
     total_amount DECIMAL(10, 2),
     discount_applied ENUM('Yes', 'No') DEFAULT 'No',
-    refund_processed ENUM('Yes', 'No') DEFAULT 'No',
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
     FOREIGN KEY (guest_id) REFERENCES guests(guest_id)
 );
@@ -88,6 +85,7 @@ CREATE TABLE invoices (
     total_amount_due DECIMAL(10, 2),
     amount_paid DECIMAL(10, 2),
     balance_due DECIMAL(10, 2),
+    discount DECIMAL(10, 2),
     payment_status ENUM('Paid', 'Partially Paid', 'Unpaid') DEFAULT 'Unpaid',
     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id),
     FOREIGN KEY (guest_id) REFERENCES guests(guest_id)

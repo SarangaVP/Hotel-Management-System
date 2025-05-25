@@ -7,11 +7,16 @@ require_once '../includes/header.php';
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM feedback WHERE feedback_id = ?");
     $stmt->execute([$_GET['delete']]);
-    header("Location: feedback.php"); // Redirect to refresh the page after deletion
+    header("Location: feedback.php");
     exit;
 }
 
-$feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FROM feedback f JOIN guests g ON f.guest_id = g.guest_id JOIN bookings b ON f.booking_id = b.booking_id")->fetchAll();
+$feedbacks = $pdo->query("
+    SELECT f.*, g.first_name, g.last_name, b.booking_id 
+    FROM feedback f 
+    JOIN guests g ON f.guest_id = g.guest_id 
+    JOIN bookings b ON f.booking_id = b.booking_id
+")->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +33,7 @@ $feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FR
     <main>
         <div class="container mt-5 pt-5">
             <div class="card standard-card p-4 mb-4">
-                <h2 class="text-center mb-4">Customer Feedback</h2>
+                <h1 class="text-center mb-4"><b>Customer Feedback</b></h1>
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
@@ -38,44 +43,26 @@ $feedbacks = $pdo->query("SELECT f.*, g.first_name, g.last_name, b.booking_id FR
                                 <th>Booking</th>
                                 <th>Rating</th>
                                 <th>Comments</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                <th>Date & Time</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($feedbacks as $feedback) { ?>
+                            <?php if (empty($feedbacks)): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_id']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['first_name'] . ' ' . $feedback['last_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['booking_id']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_rating']); ?>/5</td>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_comments']); ?></td>
-                                    <td><?php echo htmlspecialchars($feedback['feedback_date']); ?></td>
-                                    <td>
-                                        <div class="d-flex gap-2 justify-content-center">
-                                            <button type="button" class="btn btn-outline-primary btn-outline-navy btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $feedback['feedback_id']; ?>">Delete</button>
-                                        </div>
-                                        <!-- Delete Confirmation Modal -->
-                                        <div class="modal fade" id="deleteModal<?php echo $feedback['feedback_id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $feedback['feedback_id']; ?>" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content standard-card">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="deleteModalLabel<?php echo $feedback['feedback_id']; ?>">Confirm Deletion</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        Are you sure you want to delete this feedback from <?php echo htmlspecialchars($feedback['first_name'] . ' ' . $feedback['last_name']); ?>?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-primary btn-outline-navy" data-bs-dismiss="modal">Cancel</button>
-                                                        <a href="?delete=<?php echo $feedback['feedback_id']; ?>" class="btn btn-primary btn-navy">Delete</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td colspan="6" class="text-center">No feedback available.</td>
                                 </tr>
-                            <?php } ?>
+                            <?php else: ?>
+                                <?php foreach ($feedbacks as $feedback): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['first_name'] . ' ' . $feedback['last_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['booking_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_rating']); ?>/5</td>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_comments']); ?></td>
+                                        <td><?php echo htmlspecialchars($feedback['feedback_date'] . ' ' . $feedback['feedback_time']); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

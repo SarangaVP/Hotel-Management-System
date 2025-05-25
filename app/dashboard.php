@@ -4,12 +4,24 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
+require_once '../includes/db_connect.php'; 
 require_once '../includes/header.php';
 
-// Placeholder data for dashboard summary (replace with actual data if available)
-$today_check_ins = 5; // Example
-$pending_bookings = 3; // Example
-$total_revenue = 1500.00; // Example
+try {
+    $stmt = $pdo->query("SELECT COUNT(*) FROM rooms WHERE room_status = 'Available'");
+    $available_rooms = $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) FROM rooms WHERE room_status = 'Booked'");
+    $booked_rooms = $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT COUNT(*) FROM feedback");
+    $total_feedbacks = $stmt->fetchColumn();
+} catch (PDOException $e) {
+    $available_rooms = 0;
+    $booked_rooms = 0;
+    $total_feedbacks = 0;
+    echo '<div class="alert alert-danger text-center">Error fetching dashboard data: ' . htmlspecialchars($e->getMessage()) . '</div>';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,27 +38,26 @@ $total_revenue = 1500.00; // Example
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card glass-card p-4 shadow-lg" style="max-width: 800px; width: 100%;">
             <div class="card-body text-center">
-                <h2 class="card-title mb-2 text-navy">Hotel Management System</h2>
-                <h4 class="card-subtitle mb-3 text-muted">Staff Dashboard</h4>
-                <h5 class="text-white mb-4">Welcome, <?php echo htmlspecialchars($_SESSION['role']); ?>!</h5>
+                <h2 class="card-title mb-4 text-navy"><b>Hotel Management System</b></h2>
+                <h3 class="text-muted mb-5"><b>Welcome, <?php echo htmlspecialchars($_SESSION['role']); ?>!</b></h3>
                 <div class="dashboard-summary">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <div class="card glass-card p-3">
-                                <h6 class="text-white mb-2">Today's Check-ins</h6>
-                                <p class="text-navy fs-4"><?php echo $today_check_ins; ?></p>
+                                <h6 class="text-muted mb-2"><b>Available Rooms</b></h6>
+                                <p class="text-muted fs-4"><?php echo $available_rooms; ?></p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="card glass-card p-3">
-                                <h6 class="text-white mb-2">Pending Bookings</h6>
-                                <p class="text-navy fs-4"><?php echo $pending_bookings; ?></p>
+                                <h6 class="text-muted mb-2"><b>Booked Rooms</b></h6>
+                                <p class="text-muted fs-4"><?php echo $booked_rooms; ?></p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="card glass-card p-3">
-                                <h6 class="text-white mb-2">Total Revenue</h6>
-                                <p class="text-navy fs-4">$<?php echo number_format($total_revenue, 2); ?></p>
+                                <h6 class="text-muted mb-2"><b>Total Feedbacks</b></h6>
+                                <p class="text-muted fs-4"><?php echo $total_feedbacks; ?></p>
                             </div>
                         </div>
                     </div>

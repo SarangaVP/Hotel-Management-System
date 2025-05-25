@@ -5,10 +5,10 @@ require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
 if (isset($_POST['add_staff'])) {
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $password = $_POST['password'];
     $stmt = $pdo->prepare("INSERT INTO staff (first_name, last_name, role, phone_number, email, password) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->execute([$_POST['first_name'], $_POST['last_name'], $_POST['role'], $_POST['phone'], $_POST['email'], $password]);
-    header("Location: staff.php"); // Redirect to refresh the page after adding
+    header("Location: users.php");
     exit;
 }
 
@@ -18,18 +18,18 @@ if (isset($_POST['edit_staff'])) {
     
     // Update password if provided
     if (!empty($_POST['password'])) {
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $password = $_POST['password'];
         $stmt = $pdo->prepare("UPDATE staff SET password = ? WHERE staff_id = ?");
         $stmt->execute([$password, $_POST['staff_id']]);
     }
-    header("Location: staff.php"); // Redirect to refresh the page after updating
+    header("Location: users.php");
     exit;
 }
 
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM staff WHERE staff_id = ?");
     $stmt->execute([$_GET['delete']]);
-    header("Location: staff.php"); // Redirect to refresh the page after deletion
+    header("Location: users.php");
     exit;
 }
 
@@ -50,7 +50,7 @@ $staff = $pdo->query("SELECT * FROM staff")->fetchAll();
     <main>
         <div class="container mt-5 pt-5">
             <div class="card standard-card p-4 mb-4">
-                <h2 class="text-center mb-4">Staff Management</h2>
+                <h1 class="text-center mb-4"><b>Staff Management</b></h1>
                 <form method="POST">
                     <div class="row g-3">
                         <div class="col-md-6">
@@ -109,7 +109,7 @@ $staff = $pdo->query("SELECT * FROM staff")->fetchAll();
                                             <button type="button" class="btn btn-primary btn-navy btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $user['staff_id']; ?>">Edit</button>
                                             <button type="button" class="btn btn-outline-primary btn-outline-navy btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $user['staff_id']; ?>">Delete</button>
                                         </div>
-                                        <!-- Edit Staff Modal -->
+                                      
                                         <div class="modal fade" id="editModal<?php echo $user['staff_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $user['staff_id']; ?>" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content standard-card">
@@ -152,7 +152,7 @@ $staff = $pdo->query("SELECT * FROM staff")->fetchAll();
                                                 </div>
                                             </div>
                                         </div>
-                                        <!-- Delete Confirmation Modal -->
+                                       
                                         <div class="modal fade" id="deleteModal<?php echo $user['staff_id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $user['staff_id']; ?>" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content standard-card">
