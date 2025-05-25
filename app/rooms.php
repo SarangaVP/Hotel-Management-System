@@ -12,14 +12,14 @@ if (isset($_POST['add_room'])) {
 if (isset($_POST['edit_room'])) {
     $stmt = $pdo->prepare("UPDATE rooms SET room_number = ?, room_type = ?, room_capacity = ?, price_per_night = ?, floor_number = ?, room_status = ? WHERE room_id = ?");
     $stmt->execute([$_POST['room_number'], $_POST['room_type'], $_POST['capacity'], $_POST['price'], $_POST['floor'], $_POST['status'], $_POST['room_id']]);
-    header("Location: rooms.php"); // Redirect to refresh the page after update
+    header("Location: rooms.php");
     exit;
 }
 
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM rooms WHERE room_id = ?");
     $stmt->execute([$_GET['delete']]);
-    header("Location: rooms.php"); // Redirect to refresh the page after deletion
+    header("Location: rooms.php");
     exit;
 }
 
@@ -100,7 +100,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
                                         <button type="button" class="btn btn-primary btn-navy btn-sm" data-bs-toggle="modal" data-bs-target="#editModal<?php echo $room['room_id']; ?>">Edit</button>
                                         <button type="button" class="btn btn-outline-primary btn-outline-navy btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal<?php echo $room['room_id']; ?>">Delete</button>
                                     </div>
-                                    <!-- Edit Room Modal -->
+                                    
                                     <div class="modal fade" id="editModal<?php echo $room['room_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $room['room_id']; ?>" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content standard-card">
@@ -148,7 +148,7 @@ $rooms = $pdo->query("SELECT * FROM rooms")->fetchAll();
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Delete Confirmation Modal -->
+                               
                                     <div class="modal fade" id="deleteModal<?php echo $room['room_id']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel<?php echo $room['room_id']; ?>" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content standard-card">

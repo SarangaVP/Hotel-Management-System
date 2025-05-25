@@ -1,55 +1,3 @@
-/* * {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 2rem;
-    background-color: #f4f4f4;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-h1, h2 {
-    color: #333;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-}
-
-.success {
-    color: green;
-    margin: 1rem 0;
-}
-
-.error {
-    color: red;
-}
-
-.login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-@media (max-width: 768px) {
-    body {
-        padding: 1rem;
-    }
-    .login-container {
-        max-width: 100%;
-    }
-} */
-
-
-
-
-
-
-/* Reset and base styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -58,34 +6,30 @@ h1, h2 {
 
 body {
     font-family: 'Montserrat', sans-serif !important;
-    background: #ffffff !important; /* Default white background */
+    background: #ffffff !important;
     min-height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
-    color: #333 !important; /* Darker text for readability on white background */
+    color: #333 !important;
 }
 
-/* Main content area should grow to fill remaining space */
 main {
-    flex-grow: 1 !important; /* Ensures the main content area takes up remaining space */
+    flex-grow: 1 !important;
 }
 
-/* Footer styles */
 footer {
-    background: #1a2b5f !important; /* Navy background */
-    color: #ffffff !important; /* White text */
+    background: #1a2b5f !important;
+    color: #ffffff !important;
     text-align: center !important;
     padding: 1rem !important;
     width: 100% !important;
-    flex-shrink: 0 !important; /* Prevents the footer from shrinking */
+    flex-shrink: 0 !important;
 }
 
-/* Lobby background for specific pages */
 body.lobby-bg {
     background: linear-gradient(rgba(0, 0, 50, 0.4), rgba(0, 0, 50, 0.4)), url('../assets/hotel-bg.png') no-repeat center/cover fixed !important;
 }
 
-/* Glassmorphism card (used only on lobby-bg pages) */
 .card.glass-card {
     background: rgba(255, 255, 255, 0.3) !important;
     backdrop-filter: blur(8px) !important;
@@ -93,15 +37,13 @@ body.lobby-bg {
     border-radius: 20px !important;
 }
 
-/* Standard card for white background pages */
 .card.standard-card {
-    background: #f8f9fa !important; /* Light gray background */
+    background: #f8f9fa !important;
     border: 1px solid #dee2e6 !important;
     border-radius: 10px !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Solid header */
 .solid-header {
     background: #1a2b5f !important;
     position: fixed !important;
@@ -112,7 +54,6 @@ body.lobby-bg {
     animation: fadeInDown 0.5s ease-in-out !important;
 }
 
-/* Logo highlight effect */
 .navbar-brand.logo-highlight {
     color: #ffffff !important;
     font-size: 1.8rem !important;
@@ -125,7 +66,6 @@ body.lobby-bg {
     transform: scale(1.05) !important;
 }
 
-/* Navigation text */
 .nav-text {
     color: #ffffff !important;
     font-size: 1rem !important;
@@ -138,7 +78,6 @@ body.lobby-bg {
     color: #d0d0d0 !important;
 }
 
-/* Custom colors */
 h2.text-navy,
 h4.text-navy,
 h5.text-navy,
@@ -148,7 +87,6 @@ p.text-navy {
     color: #ffffff !important;
 }
 
-/* Button styles for white background */
 button.btn.btn-primary.btn-navy,
 a.btn.btn-primary.btn-navy {
     background-color: #1a2b5f !important;
@@ -178,7 +116,6 @@ button.btn.btn-outline-primary.btn-outline-navy:hover {
     color: white !important;
 }
 
-/* Button styles for glassmorphic pages (lobby-bg) */
 body.lobby-bg button.btn.btn-primary.btn-gold,
 body.lobby-bg a.btn.btn-primary.btn-gold {
     background-color: #2a3b7f !important;
@@ -211,12 +148,10 @@ button.btn.btn-outline-primary.btn-outline-navy:hover {
     box-shadow: 0 0 15px rgba(15, 26, 61, 0.5) !important;
 }
 
-/* Button shadow */
 .btn-shadow {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Fade-in animation */
 @keyframes fadeInDown {
     from {
         opacity: 0;
@@ -228,7 +163,6 @@ button.btn.btn-outline-primary.btn-outline-navy:hover {
     }
 }
 
-/* Responsive adjustments */
 @media (max-width: 576px) {
     .card.glass-card,
     .card.standard-card {

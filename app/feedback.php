@@ -7,11 +7,10 @@ require_once '../includes/header.php';
 if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("DELETE FROM feedback WHERE feedback_id = ?");
     $stmt->execute([$_GET['delete']]);
-    header("Location: feedback.php"); // Redirect to refresh the page after deletion
+    header("Location: feedback.php");
     exit;
 }
 
-// Fetch feedback with both date and time
 $feedbacks = $pdo->query("
     SELECT f.*, g.first_name, g.last_name, b.booking_id 
     FROM feedback f 
@@ -45,7 +44,6 @@ $feedbacks = $pdo->query("
                                 <th>Rating</th>
                                 <th>Comments</th>
                                 <th>Date & Time</th>
-                                <!-- <th>Actions</th> -->
                             </tr>
                         </thead>
                         <tbody>

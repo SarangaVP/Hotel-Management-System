@@ -34,17 +34,6 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-5"><b>Welcome, <?php echo $guest_name; ?>!</b></h1>
 
-            <!-- Section 1: Navigation Links -->
-            <!-- <div class="card standard-card p-4 mb-4">
-                <div class="dashboard-links">
-                    <a href="guest_bookings.php" class="btn btn-primary btn-navy btn-lg">Book a Room</a>
-                    <a href="guest_profile.php" class="btn btn-primary btn-navy btn-lg">My Profile</a>
-                    <a href="guest_feedback.php" class="btn btn-primary btn-navy btn-lg">Submit Feedback</a>
-                    <a href="logout.php" class="btn btn-danger btn-lg">Logout</a>
-                </div>
-            </div> -->
-
-            <!-- Section 2: My Bookings -->
             <div class="card standard-card p-4 mb-4">
                 <h4 class="mb-3 text-center"><b>My Bookings</b></h4>
                 <div class="table-responsive">

@@ -4,24 +4,19 @@ if (!isset($_SESSION['user_id'])) header("Location: index.php");
 require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
-// Default date range (last 30 days)
 $start_date = isset($_POST['start_date']) ? $_POST['start_date'] : date('Y-m-d', strtotime('-30 days'));
 $end_date = isset($_POST['end_date']) ? $_POST['end_date'] : date('Y-m-d');
 
-// Reformat dates for display in MM/DD/YYYY format
 $start_date_display = (new DateTime($start_date))->format('m/d/Y');
 $end_date_display = (new DateTime($end_date))->format('m/d/Y');
 
-// Fetch occupancy data
 $occupancy = $pdo->query("SELECT COUNT(*) as booked, (SELECT COUNT(*) FROM rooms) as total FROM rooms WHERE room_status = 'Booked'")->fetch();
 $occupancy_percentage = $occupancy['total'] > 0 ? round(($occupancy['booked'] / $occupancy['total']) * 100) : 0;
 
-// Fetch revenue data with date filter
 $stmt = $pdo->prepare("SELECT SUM(total_amount) as total_revenue FROM payments WHERE payment_received = 'Yes' AND payment_date BETWEEN ? AND ?");
 $stmt->execute([$start_date, $end_date]);
 $revenue = $stmt->fetch();
 
-// Fetch payment history with date filter
 $stmt = $pdo->prepare("
     SELECT p.*, g.first_name, g.last_name, b.booking_id 
     FROM payments p 
@@ -51,7 +46,6 @@ $payments = $stmt->fetchAll();
             <div class="card standard-card p-4 mb-4">
                 <h1 class="text-center mb-4"><b>Reports and Analytics</b></h1>
 
-                <!-- Date Range Filter for Revenue -->
                 <div class="mb-4">
                     <h5 class="mb-3 mt-3"><b>Filter Revenue by Date Range</b></h5>
                     <form method="POST" class="date-filter-form">
@@ -69,7 +63,6 @@ $payments = $stmt->fetchAll();
                     </form>
                 </div>
 
-                <!-- Revenue Report -->
                 <div class="mb-4">
                     <h4 class="mb-3"><b>Revenue Report</b></h4>
                     <div class="card standard-card p-3">
@@ -77,7 +70,6 @@ $payments = $stmt->fetchAll();
                     </div>
                 </div>
 
-                <!-- Payment History -->
                 <div class="mb-4">
                     <h4 class="mb-3"><b>Payment History</b></h4>
                     <div class="card standard-card p-3">
@@ -116,7 +108,6 @@ $payments = $stmt->fetchAll();
                     </div>
                 </div>
 
-                <!-- Occupancy Report -->
                 <div class="mb-4">
                     <h4 class="mb-3"><b>Occupancy Report</b></h4>
                     <div class="card standard-card p-3">

@@ -4,24 +4,20 @@ if (!isset($_SESSION['user_id'])) header("Location: index.php");
 require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
-// Initialize alert message
 $alert_message = '';
 $alert_type = '';
 
-// Handle Add Booking
 if (isset($_POST['add_booking'])) {
     $checkin_date = $_POST['checkin_date'];
     $checkout_date = $_POST['checkout_date'];
     $num_guests = (int)$_POST['num_guests'];
     $room_id = (int)$_POST['room_id'];
 
-    // Fetch room capacity
     $stmt = $pdo->prepare("SELECT room_capacity FROM rooms WHERE room_id = ?");
     $stmt->execute([$room_id]);
     $room = $stmt->fetch();
     $room_capacity = $room ? $room['room_capacity'] : 0;
 
-    // Validate dates, number of guests, and room capacity
     if (strtotime($checkout_date) <= strtotime($checkin_date)) {
         $alert_message = "Error: Check-out date must be after check-in date.";
         $alert_type = "danger";
@@ -45,7 +41,6 @@ if (isset($_POST['add_booking'])) {
     }
 }
 
-// Handle Cancel Booking
 if (isset($_POST['cancel_booking'])) {
     try {
         $booking_id = $_POST['booking_id'];
@@ -60,7 +55,6 @@ if (isset($_POST['cancel_booking'])) {
     }
 }
 
-// Fetch data
 $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FROM bookings b JOIN guests g ON b.guest_id = g.guest_id JOIN rooms r ON b.room_id = r.room_id")->fetchAll();
 $guests = $pdo->query("SELECT guest_id, first_name, last_name FROM guests")->fetchAll();
 $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHERE room_status = 'Available'")->fetchAll();
@@ -81,7 +75,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-4"><b>Booking Management</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -89,7 +82,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                 </div>
             <?php endif; ?>
 
-            <!-- Section 1: Add New Booking -->
             <div class="card standard-card p-4 mb-4">
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
@@ -136,7 +128,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                 </form>
             </div>
 
-            <!-- Section 2: Current Bookings -->
             <div class="card standard-card p-4 mb-4">
                 <h4 class="mb-3 text-center"><b>Current Bookings</b></h4>
                 <div class="table-responsive">
@@ -199,7 +190,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                 </div>
             </div>
 
-            <!-- Validation Error Modal -->
             <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -217,7 +207,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
                 </div>
             </div>
 
-            <!-- Cancel Confirmation Modal -->
             <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -244,7 +233,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Client-side validation for dates and room capacity with modal
         document.querySelector('form').addEventListener('submit', function (e) {
             const checkin = new Date(document.getElementById('checkin_date').value);
             const checkout = new Date(document.getElementById('checkout_date').value);
@@ -276,7 +264,6 @@ $rooms = $pdo->query("SELECT room_id, room_number, room_capacity FROM rooms WHER
             }
         });
 
-        // Handle cancel modal
         const cancelModal = document.getElementById('cancelModal');
         cancelModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;

@@ -4,11 +4,9 @@ if (!isset($_SESSION['user_id'])) header("Location: index.php");
 require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
-// Initialize alert message
 $alert_message = '';
 $alert_type = '';
 
-// Handle Generate Invoice
 if (isset($_POST['generate_invoice'])) {
     $booking_id = $_POST['booking_id'];
     try {
@@ -35,7 +33,6 @@ if (isset($_POST['generate_invoice'])) {
     }
 }
 
-// Handle Record Payment
 if (isset($_POST['record_payment'])) {
     $invoice_id = $_POST['invoice_id'];
     $booking_id = $_POST['booking_id'];
@@ -47,7 +44,6 @@ if (isset($_POST['record_payment'])) {
     $current_amount_paid = (float)$_POST['current_amount_paid'];
     $current_discount = isset($_POST['current_discount']) ? (float)$_POST['current_discount'] : 0;
 
-    // Validate inputs
     if ($payment_amount <= 0) {
         $alert_message = "Error: Payment amount must be greater than 0.";
         $alert_type = "danger";
@@ -59,13 +55,11 @@ if (isset($_POST['record_payment'])) {
         $alert_type = "danger";
     } else {
         try {
-            // Calculate new amounts
             $new_discount = $current_discount + $discount_amount;
             $new_total_amount_due = $total_amount_due - $discount_amount;
             $new_amount_paid = $current_amount_paid + $payment_amount;
             $balance_due = $new_total_amount_due - $new_amount_paid;
 
-            // Handle overpayment
             $overpayment = 0;
             if ($balance_due < 0) {
                 $overpayment = abs($balance_due);
@@ -73,12 +67,10 @@ if (isset($_POST['record_payment'])) {
                 $new_amount_paid = $new_total_amount_due;
             }
 
-            // Update invoice
             $payment_status = $balance_due == 0 ? 'Paid' : ($new_amount_paid > 0 ? 'Partially Paid' : 'Unpaid');
             $stmt = $pdo->prepare("UPDATE invoices SET total_amount_due = ?, amount_paid = ?, balance_due = ?, payment_status = ?, discount = ? WHERE invoice_id = ?");
             $stmt->execute([$new_total_amount_due, $new_amount_paid, $balance_due, $payment_status, $new_discount, $invoice_id]);
 
-            // Record payment
             $discount_applied = $discount_amount > 0 ? 'Yes' : 'No';
             $stmt = $pdo->prepare("INSERT INTO payments (booking_id, guest_id, payment_received, payment_date, payment_time, payment_method, total_amount, discount_applied) VALUES (?, ?, 'Yes', CURDATE(), CURTIME(), ?, ?, ?)");
             $stmt->execute([$booking_id, $guest_id, $payment_method, $payment_amount, $discount_applied]);
@@ -92,7 +84,6 @@ if (isset($_POST['record_payment'])) {
     }
 }
 
-// Fetch data
 $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FROM bookings b JOIN guests g ON b.guest_id = g.guest_id JOIN rooms r ON b.room_id = r.room_id WHERE b.booking_status = 'Completed'")->fetchAll();
 $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FROM invoices i JOIN bookings b ON i.booking_id = b.booking_id JOIN guests g ON i.guest_id = g.guest_id")->fetchAll();
 ?>
@@ -112,7 +103,6 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-4"><b>Billing and Payments</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -120,7 +110,6 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                 </div>
             <?php endif; ?>
 
-            <!-- Section 1: Generate Invoice -->
             <div class="card standard-card p-4 mb-4">
                 <h4 class="mb-3 text-center"><b>Generate Invoice</b></h4>
                 <div class="table-responsive">
@@ -155,7 +144,6 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                 </div>
             </div>
 
-            <!-- Section 2: Invoices -->
             <div class="card standard-card p-4 mb-4">
                 <h4 class="mb-3 text-center"><b>Invoices</b></h4>
                 <div class="table-responsive">
@@ -198,7 +186,6 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                                         </td>
                                     </tr>
 
-                                    <!-- Payment Modal -->
                                     <div class="modal fade" id="paymentModal<?php echo $invoice['invoice_id']; ?>" tabindex="-1" aria-labelledby="paymentModalLabel<?php echo $invoice['invoice_id']; ?>" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -246,7 +233,6 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
                 </div>
             </div>
 
-            <!-- Confirmation Modal -->
             <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -272,19 +258,16 @@ $invoices = $pdo->query("SELECT i.*, b.booking_id, g.first_name, g.last_name FRO
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // JavaScript to handle modal content dynamically
         const confirmModal = document.getElementById('confirmModal');
         confirmModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget; // Button that triggered the modal
-            const bookingId = button.getAttribute('data-booking-id'); // Booking ID
+            const button = event.relatedTarget;
+            const bookingId = button.getAttribute('data-booking-id');
 
             const modalBookingId = document.getElementById('modalBookingId');
 
-            // Set the booking ID in the hidden input
             modalBookingId.value = bookingId;
         });
 
-        // Client-side validation for payment form
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function (e) {
                 const paymentReceived = form.querySelector('[name="payment_received"]');

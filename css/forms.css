@@ -1,71 +1,3 @@
-/* form {
-    display: flex;
-    flex-direction: column;
-    max-width: 500px;
-    margin: 2rem auto;
-}
-
-input, select, button {
-    margin: 0.5rem 0;
-    padding: 0.8rem;
-    font-size: 1rem;
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-.table-container {
-    overflow-x: auto;
-    margin: 2rem 0;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #4CAF50;
-    color: white;
-}
-
-@media (max-width: 768px) {
-    form {
-        max-width: 100%;
-    }
-    th, td {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    th, td {
-        font-size: 0.8rem;
-    }
-} */
-
-
-
-
-/* Form styles for white background */
 .form-control,
 .form-select {
     background: #ffffff !important;
@@ -88,43 +20,39 @@ th {
     color: #333 !important;
 }
 
-/* Flexbox layout for date filter form */
 .date-filter-form {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    gap: 1rem; /* Space between elements */
-    align-items: flex-end; /* Align items at the bottom */
-    justify-content: center; /* Center the form elements */
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    justify-content: center;
 }
 
 .form-group {
-    flex: 1 1 240px; /* Grow and shrink, but minimum 240px */
-    max-width: 300px; /* Cap the width to prevent over-expansion */
+    flex: 1 1 240px;
+    max-width: 300px;
 }
 
 .form-group-button {
-    flex: 0 1 auto; /* Don’t grow, but shrink if needed */
+    flex: 0 1 auto;
     display: flex;
-    align-items: flex-end; /* Align button at the bottom */
+    align-items: flex-end;
 }
 
-/* Ensure date inputs are wide enough to display full date */
 .date-input {
-    min-width: 240px !important; /* Enough width for MM/DD/YYYY format */
-    width: 100% !important; /* Take full width of its container */
-    padding-right: 40px !important; /* Space for the date picker icon */
+    min-width: 240px !important;
+    width: 100% !important;
+    padding-right: 40px !important;
     font-size: 1rem !important;
 }
 
-/* Style the Filter button */
 .filter-btn {
-    min-width: 120px !important; /* Ensure enough width for "Filter" */
-    padding: 0.5rem 1rem !important; /* Consistent padding */
-    font-size: 1rem !important; /* Readable font size */
-    white-space: nowrap !important; /* Prevent text wrapping */
+    min-width: 120px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 1rem !important;
+    white-space: nowrap !important;
 }
 
-/* Form styles for lobby background pages */
 body.lobby-bg .form-control,
 body.lobby-bg .form-select {
     background: rgba(255, 255, 255, 0.1) !important;
@@ -147,7 +75,6 @@ body.lobby-bg .form-select:focus {
     color: #ffffff !important;
 }
 
-/* Table styles for white background */
 .table-standard {
     background: #ffffff !important;
     border: 1px solid #dee2e6 !important;
@@ -156,7 +83,7 @@ body.lobby-bg .form-select:focus {
 }
 
 .table-standard thead {
-    background: #e9ecef !important; /* Light gray header */
+    background: #e9ecef !important;
 }
 
 .table-standard th,
@@ -164,19 +91,17 @@ body.lobby-bg .form-select:focus {
     border: 1px solid #dee2e6 !important;
     padding: 0.75rem !important;
     text-align: center;
-    vertical-align: middle !important; /* Vertically center content */
+    vertical-align: middle !important;
 }
 
-/* Ensure the flex container inside the table cell is also centered vertically */
 .table-standard td .d-flex {
-    align-items: center !important; /* Vertically center the buttons */
-    min-height: 100% !important; /* Ensure the flex container takes the full height of the cell */
+    align-items: center !important;
+    min-height: 100% !important;
 }
 
-/* Adjust button sizing for consistency */
 .table-standard .btn-sm {
-    padding: 0.25rem 0.75rem !important; /* Consistent padding for buttons */
-    font-size: 0.875rem !important; /* Slightly larger font for readability */
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.875rem !important;
 }
 
 .table-standard tbody tr {
@@ -187,7 +112,6 @@ body.lobby-bg .form-select:focus {
     background: #f1f3f5 !important;
 }
 
-/* Table styles for lobby background */
 body.lobby-bg .table-glass {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -196,7 +120,7 @@ body.lobby-bg .table-glass {
 }
 
 body.lobby-bg .table-glass thead {
-    background: rgba(26, 43, 95, 0.8) !important; /* Navy blue header */
+    background: rgba(26, 43, 95, 0.8) !important;
 }
 
 body.lobby-bg .table-glass th,
@@ -214,36 +138,32 @@ body.lobby-bg .table-glass tbody tr:hover {
     background: rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Modal close button for white background */
 .btn-close {
     filter: none !important;
 }
 
-/* Modal close button for lobby background */
 body.lobby-bg .btn-close-white {
     filter: invert(1) grayscale(100%) brightness(200%) !important;
 }
 
-/* Progress bar navy background */
 .bg-navy {
     background-color: #1a2b5f !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .date-filter-form {
-        flex-direction: column; /* Stack vertically on smaller screens */
-        align-items: stretch; /* Stretch elements to full width */
+        flex-direction: column;
+        align-items: stretch;
     }
     .form-group, .form-group-button {
-        max-width: 100% !important; /* Full width on mobile */
+        max-width: 100% !important;
     }
     .date-input {
-        min-width: 100% !important; /* Full width on mobile */
+        min-width: 100% !important;
         font-size: 0.9rem !important;
     }
     .filter-btn {
-        min-width: 100% !important; /* Full width on mobile */
+        min-width: 100% !important;
         padding: 0.5rem !important;
         font-size: 0.9rem !important;
     }
@@ -258,7 +178,7 @@ body.lobby-bg .btn-close-white {
         padding: 0.5rem !important;
     }
     .table-standard td .d-flex {
-        flex-wrap: wrap; /* Allow buttons to wrap if space is tight */
+        flex-wrap: wrap;
         gap: 0.5rem !important;
         justify-content: center;
     }
@@ -272,10 +192,10 @@ body.lobby-bg .btn-close-white {
         padding: 0.5rem 1rem !important;
     }
     .table-standard .btn-sm {
-        font-size: 0.75rem !important; /* Smaller buttons on mobile */
+        font-size: 0.75rem !important;
         padding: 0.2rem 0.5rem !important;
     }
     .progress {
-        height: 15px !important; /* Smaller progress bar on mobile */
+        height: 15px !important;
     }
 }

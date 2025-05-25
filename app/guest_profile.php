@@ -68,7 +68,6 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-4"><b>My Profile</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -76,9 +75,7 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
                 </div>
             <?php endif; ?>
 
-            <!-- Section 1: Update Profile -->
             <div class="card standard-card p-4 mb-4">
-                <!-- <h4 class="mb-3 text-center">Update Profile</h4> -->
                 <form method="POST" class="date-filter-form">
                     <div class="form-group">
                         <label for="first_name" class="form-label">First Name</label>
@@ -119,7 +116,6 @@ $bookings = $pdo->query("SELECT b.*, r.room_number FROM bookings b JOIN rooms r 
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Client-side validation
         document.querySelector('form').addEventListener('submit', function (e) {
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;

@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $phone = $_POST['phone'] ?? null;
 
     try {
-        // Check if email already exists
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM guests WHERE email = ?");
         $stmt->execute([$email]);
         if ($stmt->fetchColumn() > 0) {
@@ -24,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = $pdo->prepare("INSERT INTO guests (first_name, last_name, phone_number, email, password) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$first_name, $last_name, $phone, $email, $password]);
             $success = "Registration successful! Redirecting to login...";
-            // Redirect after 3 seconds
             header("Refresh: 3; URL=guest_login.php");
         }
     } catch (PDOException $e) {
@@ -96,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Bootstrap form validation
         (function () {
             'use strict';
             const forms = document.querySelectorAll('.needs-validation');

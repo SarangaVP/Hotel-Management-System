@@ -1,5 +1,4 @@
 <?php
-// Ensure session is started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -13,7 +12,7 @@ if (session_status() == PHP_SESSION_NONE) {
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <?php if (isset($_SESSION['user_id'])) { // Staff navigation ?>
+                    <?php if (isset($_SESSION['user_id'])) { ?>
                         <li class="nav-item">
                             <a class="nav-link nav-text" href="dashboard.php">Home</a>
                         </li>
@@ -43,7 +42,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <a class="nav-link nav-text" href="users.php">Users</a>
                             </li>
                         <?php } ?>
-                    <?php } elseif (isset($_SESSION['guest_id'])) { // Guest navigation ?>
+                    <?php } elseif (isset($_SESSION['guest_id'])) { ?>
                         <li class="nav-item">
                             <a class="nav-link nav-text" href="guest_dashboard.php">Home</a>
                         </li>
@@ -72,7 +71,7 @@ if (session_status() == PHP_SESSION_NONE) {
 <style>
     .navbar-nav {
         display: flex;
-        gap: 1.5rem; /* Consistent spacing between nav items */
+        gap: 1.5rem;
     }
 
     .navbar-nav .nav-item {
@@ -81,14 +80,13 @@ if (session_status() == PHP_SESSION_NONE) {
 
     .navbar-nav .nav-item:not(:last-child)::after {
         content: '|';
-        color: #d3d3d3; /* Light gray to match nav-text, adjust as needed */
+        color: #d3d3d3;
         position: absolute;
-        right: -0.75rem; /* Half of the gap (1.5rem / 2) to center the separator */
+        right: -0.75rem;
         top: 50%;
         transform: translateY(-50%);
     }
 
-    /* Remove separator and adjust spacing in collapsed mode */
     @media (max-width: 991.98px) {
         .navbar-nav {
             flex-direction: column;

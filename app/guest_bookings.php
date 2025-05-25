@@ -4,11 +4,10 @@ if (!isset($_SESSION['guest_id'])) header("Location: guest_login.php");
 require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
-// Initialize alert message
 $alert_message = '';
 $alert_type = '';
 $available_rooms = [];
-$last_booking_id = null; // To store the booking ID after insertion
+$last_booking_id = null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search'])) {
     $checkin = $_POST['checkin_date'];
@@ -16,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search'])) {
     $room_type = $_POST['room_type'];
     $num_guests = (int)$_POST['num_guests'];
 
-    // Validate form inputs
     if (strtotime($checkout) <= strtotime($checkin)) {
         $alert_message = "Error: Check-out date must be after check-in date.";
         $alert_type = "danger";
@@ -24,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['search'])) {
         $alert_message = "Error: Number of guests must be greater than 0.";
         $alert_type = "danger";
     } else {
-        // Search for available rooms with capacity check
         $stmt = $pdo->prepare("
             SELECT * FROM rooms 
             WHERE room_type = ? 
@@ -50,13 +47,11 @@ if (isset($_POST['book'])) {
     $num_guests = (int)$_POST['num_guests'];
     $room_id = (int)$_POST['room_id'];
 
-    // Fetch room capacity
     $stmt = $pdo->prepare("SELECT room_capacity FROM rooms WHERE room_id = ?");
     $stmt->execute([$room_id]);
     $room = $stmt->fetch();
     $room_capacity = $room ? $room['room_capacity'] : 0;
 
-    // Re-validate before booking
     if (strtotime($checkout) <= strtotime($checkin)) {
         $alert_message = "Error: Check-out date must be after check-in date.";
         $alert_type = "danger";
@@ -71,13 +66,12 @@ if (isset($_POST['book'])) {
             $stmt = $pdo->prepare("INSERT INTO bookings (guest_id, room_id, checkin_date, checkout_date, num_guests, booking_status) VALUES (?, ?, ?, ?, ?, 'Pending')");
             $stmt->execute([$_SESSION['guest_id'], $room_id, $checkin, $checkout, $num_guests]);
             
-            // Get the last inserted booking ID
             $last_booking_id = $pdo->lastInsertId();
             
             $pdo->prepare("UPDATE rooms SET room_status = 'Booked' WHERE room_id = ?")->execute([$room_id]);
             $alert_message = "Booking submitted successfully! Awaiting confirmation.";
             $alert_type = "success";
-            $available_rooms = []; // Clear available rooms after booking
+            $available_rooms = [];
         } catch (PDOException $e) {
             $alert_message = "Error submitting booking: " . $e->getMessage();
             $alert_type = "danger";
@@ -101,7 +95,6 @@ if (isset($_POST['book'])) {
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-4"><b>Book Rooms</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message && !$last_booking_id): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -109,7 +102,6 @@ if (isset($_POST['book'])) {
                 </div>
             <?php endif; ?>
 
-            <!-- Section 1: Search for a Room -->
             <div class="card standard-card p-4 mb-4">
                 <h4 class="mb-3 text-center"><b>Search for a Room</b></h4>
                 <form method="POST" class="date-filter-form" id="searchForm">
@@ -140,7 +132,6 @@ if (isset($_POST['book'])) {
                 </form>
             </div>
 
-            <!-- Section 2: Available Rooms -->
             <?php if (!empty($available_rooms)): ?>
                 <div class="card standard-card p-4 mb-4">
                     <h4 class="mb-3 text-center">Available Rooms</h4>
@@ -181,7 +172,6 @@ if (isset($_POST['book'])) {
                 </div>
             <?php endif; ?>
 
-            <!-- Validation Error Modal -->
             <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -199,7 +189,6 @@ if (isset($_POST['book'])) {
                 </div>
             </div>
 
-            <!-- Confirmation Modal -->
             <div class="modal fade" id="confirmBookingModal" tabindex="-1" aria-labelledby="confirmBookingModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -218,7 +207,6 @@ if (isset($_POST['book'])) {
                 </div>
             </div>
 
-            <!-- Success Modal -->
             <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -241,7 +229,6 @@ if (isset($_POST['book'])) {
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // Client-side validation for search form
         document.getElementById('searchForm').addEventListener('submit', function (e) {
             const checkin = new Date(document.getElementById('checkin_date').value);
             const checkout = new Date(document.getElementById('checkout_date').value);
@@ -264,7 +251,6 @@ if (isset($_POST['book'])) {
             }
         });
 
-        // Client-side validation for booking forms and custom confirmation modal
         let activeForm = null;
         document.querySelectorAll('.book-btn').forEach(button => {
             button.addEventListener('click', function () {
@@ -295,18 +281,15 @@ if (isset($_POST['book'])) {
                     return;
                 }
 
-                // Close any existing modals before opening the confirmation modal
                 document.querySelectorAll('.modal.show').forEach(modal => {
                     bootstrap.Modal.getInstance(modal).hide();
                 });
 
-                // Show the confirmation modal
                 const confirmModal = new bootstrap.Modal(document.getElementById('confirmBookingModal'), { backdrop: 'static' });
                 confirmModal.show();
             });
         });
 
-        // Handle confirmation
         document.getElementById('confirmBookingBtn').addEventListener('click', function () {
             console.log('Confirm button clicked, activeForm:', activeForm);
             if (activeForm) {
@@ -320,34 +303,28 @@ if (isset($_POST['book'])) {
             }
         });
 
-        // Handle cancel button to ensure backdrop is removed
         document.querySelectorAll('.cancel-btn').forEach(button => {
             button.addEventListener('click', function () {
                 console.log('Cancel button clicked');
                 const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmBookingModal'));
                 confirmModal.hide();
-                // Force-remove the backdrop
                 document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
                 document.body.classList.remove('modal-open');
                 document.body.style.overflow = 'auto';
             });
         });
 
-        // Ensure backdrop is removed when any modal is hidden
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('hidden.bs.modal', function () {
                 console.log('Modal hidden:', this.id);
-                // Remove any remaining backdrops
                 document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
                 document.body.classList.remove('modal-open');
                 document.body.style.overflow = 'auto';
             });
         });
 
-        // Show success modal if booking was successful
         <?php if ($last_booking_id): ?>
             document.addEventListener('DOMContentLoaded', function () {
-                // Close any existing modals before opening the success modal
                 document.querySelectorAll('.modal.show').forEach(modal => {
                     bootstrap.Modal.getInstance(modal).hide();
                 });

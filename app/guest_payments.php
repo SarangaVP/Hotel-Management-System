@@ -35,7 +35,6 @@ $previous_payments = $pdo->query("
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-4"><b>Payments</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -43,7 +42,6 @@ $previous_payments = $pdo->query("
                 </div>
             <?php endif; ?>
 
-            <!-- Section: My Payments -->
             <div class="card standard-card p-4 mb-4">
                 <h4 class="mb-3 text-center"><b>My Payments</b></h4>
                 <div class="table-responsive">

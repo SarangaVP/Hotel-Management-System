@@ -4,11 +4,9 @@ if (!isset($_SESSION['user_id'])) header("Location: index.php");
 require_once '../includes/db_connect.php';
 require_once '../includes/header.php';
 
-// Initialize alert message
 $alert_message = '';
 $alert_type = '';
 
-// Handle Check-in
 if (isset($_POST['checkin'])) {
     try {
         $stmt = $pdo->prepare("UPDATE bookings SET actual_checkin_date = CURDATE(), actual_checkin_time = CURTIME(), booking_status = 'Confirmed' WHERE booking_id = ?");
@@ -21,7 +19,6 @@ if (isset($_POST['checkin'])) {
     }
 }
 
-// Handle Check-out
 if (isset($_POST['checkout'])) {
     try {
         $stmt = $pdo->prepare("UPDATE bookings SET actual_checkout_date = CURDATE(), actual_checkout_time = CURTIME(), booking_status = 'Completed' WHERE booking_id = ?");
@@ -36,7 +33,6 @@ if (isset($_POST['checkout'])) {
     }
 }
 
-// Fetch bookings
 $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FROM bookings b JOIN guests g ON b.guest_id = g.guest_id JOIN rooms r ON b.room_id = r.room_id WHERE b.booking_status IN ('Confirmed', 'Pending')")->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -55,7 +51,6 @@ $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FR
         <div class="container mt-5 pt-5">
             <h1 class="text-center mb-4"><b>Check-in/Check-out Management</b></h1>
 
-            <!-- Alert Message -->
             <?php if ($alert_message): ?>
                 <div class="alert alert-<?php echo htmlspecialchars($alert_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($alert_message); ?>
@@ -63,9 +58,7 @@ $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FR
                 </div>
             <?php endif; ?>
 
-            <!-- Check-in/Check-out Table -->
             <div class="card standard-card p-4 mb-4">
-                <!-- <h4 class="mb-3 text-center"><b>Manage Check-in/Check-out</b></h4> -->
                 <div class="table-responsive">
                     <table class="table table-standard">
                         <thead>
@@ -129,7 +122,6 @@ $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FR
                 </div>
             </div>
 
-            <!-- Confirmation Modal -->
             <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content standard-card">
@@ -155,19 +147,17 @@ $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FR
     <?php require_once '../includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script>
-        // JavaScript to handle modal content dynamically
         const confirmModal = document.getElementById('confirmModal');
         confirmModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget; // Button that triggered the modal
-            const action = button.getAttribute('data-action'); // Check-in or Check-out
-            const bookingId = button.getAttribute('data-booking-id'); // Booking ID
+            const button = event.relatedTarget;
+            const action = button.getAttribute('data-action');
+            const bookingId = button.getAttribute('data-booking-id');
 
             const modalMessage = document.getElementById('confirmMessage');
             const confirmButton = document.getElementById('confirmButton');
             const confirmForm = document.getElementById('confirmForm');
             const modalBookingId = document.getElementById('modalBookingId');
 
-            // Set the message and form action based on the action type
             if (action === 'checkin') {
                 modalMessage.textContent = 'Are you sure you want to check in this booking?';
                 confirmForm.querySelector('button').setAttribute('name', 'checkin');
@@ -180,7 +170,6 @@ $bookings = $pdo->query("SELECT b.*, g.first_name, g.last_name, r.room_number FR
                 confirmButton.classList.add('btn-success');
             }
 
-            // Set the booking ID in the hidden input
             modalBookingId.value = bookingId;
         });
     </script>

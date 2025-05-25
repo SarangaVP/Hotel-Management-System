@@ -4,24 +4,19 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-require_once '../includes/db_connect.php'; // Added to ensure database connection
+require_once '../includes/db_connect.php'; 
 require_once '../includes/header.php';
 
-// Fetch real data for dashboard summary
 try {
-    // Count available rooms
     $stmt = $pdo->query("SELECT COUNT(*) FROM rooms WHERE room_status = 'Available'");
     $available_rooms = $stmt->fetchColumn();
 
-    // Count booked rooms
     $stmt = $pdo->query("SELECT COUNT(*) FROM rooms WHERE room_status = 'Booked'");
     $booked_rooms = $stmt->fetchColumn();
 
-    // Count total feedbacks
     $stmt = $pdo->query("SELECT COUNT(*) FROM feedback");
     $total_feedbacks = $stmt->fetchColumn();
 } catch (PDOException $e) {
-    // Handle error gracefully (you can customize this as needed)
     $available_rooms = 0;
     $booked_rooms = 0;
     $total_feedbacks = 0;
